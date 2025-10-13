@@ -717,12 +717,6 @@
         }
 
         const anchorAttr = 'data-mdfc-anchor';
-        const fallbackTrainingMeta = {
-          size: 720,
-          accuracy: 0.885,
-          positiveRatio: 0.46,
-          lastTrained: '2024-06-10T00:00:00Z'
-        };
         const initialAnchor = document.querySelector(`[${anchorAttr}]`);
         if (!initialAnchor) {
           return;
@@ -786,40 +780,12 @@
 
         const badge = document.createElement('span');
         badge.className = 'azra-panel-badge';
-        badge.textContent = 'Microsoft Defender for Cloud';
+        badge.textContent = 'INFORMED BY ALERTS';
         panel.appendChild(badge);
 
         const summary = document.createElement('p');
         summary.className = 'azra-panel-summary';
         panel.appendChild(summary);
-
-        const modelMeta = document.createElement('div');
-        modelMeta.className = 'azra-model-meta';
-        modelMeta.hidden = true;
-        panel.appendChild(modelMeta);
-
-        const scoreLabel = document.createElement('div');
-        scoreLabel.className = 'azra-model-score';
-        modelMeta.appendChild(scoreLabel);
-
-        const trainingLabel = document.createElement('div');
-        trainingLabel.className = 'azra-training-meta';
-        trainingLabel.hidden = true;
-        modelMeta.appendChild(trainingLabel);
-
-        const factorSection = document.createElement('div');
-        factorSection.className = 'azra-factor-section';
-        factorSection.hidden = true;
-        modelMeta.appendChild(factorSection);
-
-        const factorHeading = document.createElement('span');
-        factorHeading.className = 'azra-factor-heading';
-        factorHeading.textContent = 'Primary Defender for Cloud signals:';
-        factorSection.appendChild(factorHeading);
-
-        const factorList = document.createElement('ul');
-        factorList.className = 'azra-factor-list';
-        factorSection.appendChild(factorList);
 
         const actions = document.createElement('div');
         actions.className = 'azra-panel-actions';
@@ -828,13 +794,13 @@
         const copyBtn = document.createElement('button');
         copyBtn.className = 'azra-panel-button';
         copyBtn.type = 'button';
-        copyBtn.textContent = 'Copy Azure CLI remediation';
+        copyBtn.textContent = 'Copy az CLI fix';
         actions.appendChild(copyBtn);
 
         const detailsBtn = document.createElement('button');
         detailsBtn.className = 'azra-panel-button azra-secondary';
         detailsBtn.type = 'button';
-        detailsBtn.textContent = 'Open Defender for Cloud details';
+        detailsBtn.textContent = 'Open details';
         actions.appendChild(detailsBtn);
 
         let currentIssue = null;
@@ -852,71 +818,15 @@
           button.classList.remove('azra-visible');
           summary.textContent = '';
           title.textContent = '';
-          badge.textContent = 'Microsoft Defender for Cloud';
-          modelMeta.hidden = true;
-          factorSection.hidden = true;
-          factorList.replaceChildren();
-          trainingLabel.textContent = '';
-          trainingLabel.hidden = true;
+          badge.textContent = 'INFORMED BY ALERTS';
         }
 
         function applyIssue(issue) {
           currentIssue = issue;
           title.textContent = issue.title || 'Defender for Cloud recommendation available';
           summary.textContent = issue.summary || '';
-          badge.textContent = issue.source || 'Microsoft Defender for Cloud';
+          badge.textContent = (issue.source || 'Informed by alerts').toUpperCase();
           button.classList.add('azra-visible');
-
-          let metaVisible = false;
-
-          if (typeof issue.modelScore === 'number') {
-            scoreLabel.textContent = `Risk score: ${Math.round(issue.modelScore * 100)}% likelihood of excessive access`;
-            metaVisible = true;
-          } else {
-            scoreLabel.textContent = '';
-          }
-
-          const trainingMeta = issue.modelTraining && typeof issue.modelTraining === 'object' ? issue.modelTraining : null;
-          if (trainingMeta) {
-            const parts = [];
-            if (typeof trainingMeta.size === 'number') {
-              parts.push(`trained on ${trainingMeta.size} Defender for Cloud alert simulations`);
-            }
-            if (typeof trainingMeta.accuracy === 'number') {
-              const accPct = Math.round(trainingMeta.accuracy * 1000) / 10;
-              parts.push(`validation accuracy ${accPct}%`);
-            }
-            if (typeof trainingMeta.lastTrained === 'string') {
-              parts.push(`last trained ${trainingMeta.lastTrained}`);
-            }
-            trainingLabel.textContent = parts.join(' · ');
-            trainingLabel.hidden = parts.length === 0;
-            metaVisible = metaVisible || parts.length > 0;
-          } else {
-            trainingLabel.textContent = '';
-            trainingLabel.hidden = true;
-          }
-
-          factorList.replaceChildren();
-          if (Array.isArray(issue.topFactors) && issue.topFactors.length) {
-            issue.topFactors.slice(0, 3).forEach((factor) => {
-              if (!factor || typeof factor.feature !== 'string') {
-                return;
-              }
-              const li = document.createElement('li');
-              li.className = 'azra-factor-item';
-              const contribution = typeof factor.contribution === 'number' ? factor.contribution : 0;
-              const direction = contribution >= 0 ? '↑' : '↓';
-              li.textContent = `${direction} ${factor.feature.replace(/_/g, ' ')} (${Math.abs(contribution).toFixed(2)})`;
-              factorList.appendChild(li);
-            });
-            factorSection.hidden = false;
-            metaVisible = true;
-          } else {
-            factorSection.hidden = true;
-          }
-
-          modelMeta.hidden = !metaVisible;
           setPanel(true);
         }
 
@@ -937,21 +847,11 @@
           }
         }
 
-        function useIssuePayload(issue, fallback, backendTraining) {
-          const trainingMeta = backendTraining || (issue && issue.modelTraining) || (fallback && fallback.modelTraining) || fallbackTrainingMeta;
-
+        function useIssuePayload(issue, fallback) {
           if (issue && issue.hasIssue) {
-            const hydrated = { ...issue };
-            if (!hydrated.modelTraining && trainingMeta) {
-              hydrated.modelTraining = trainingMeta;
-            }
-            applyIssue(hydrated);
+            applyIssue(issue);
           } else if (fallback && fallback.hasIssue) {
-            const fallbackClone = { ...fallback };
-            if (!fallbackClone.modelTraining && trainingMeta) {
-              fallbackClone.modelTraining = trainingMeta;
-            }
-            applyIssue(fallbackClone);
+            applyIssue(fallback);
           } else {
             clearIssue();
           }
@@ -978,9 +878,8 @@
           }
 
           const backendPayload = await hydrateFromBackend(resourceId, pageHash);
-          const backendTraining = backendPayload && typeof backendPayload === 'object' ? backendPayload.modelTraining : null;
           const fallbackClone = fallback ? { ...fallback } : null;
-          useIssuePayload(backendPayload, fallbackClone, backendTraining);
+          useIssuePayload(backendPayload, fallbackClone);
         }
 
         const scenarioFallback = {
@@ -995,14 +894,7 @@
             azFix:
               "az role assignment delete --assignee spn-contoso-checkout --role 'Storage Blob Data Owner' --scope /subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod",
             resourceId:
-              '/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod',
-            modelScore: 0.81,
-            topFactors: [
-              { feature: 'resource_sensitivity', contribution: 1.72 },
-              { feature: 'incident_history', contribution: 1.24 },
-              { feature: 'permissions_focus', contribution: 0.68 }
-            ],
-            modelTraining: fallbackTrainingMeta
+              '/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod'
           },
           sql: {
             hasIssue: true,
@@ -1015,14 +907,7 @@
             azFix:
               "az sql server ad-admin delete --resource-group northwind-finance --server northwind-ledger-sql",
             resourceId:
-              '/subscriptions/4458cfd6-2c8b-42e3-a2f4-0f3041a4e768/resourceGroups/northwind-finance/providers/Microsoft.Sql/servers/northwind-ledger-sql',
-            modelScore: 0.73,
-            topFactors: [
-              { feature: 'incident_history', contribution: 1.31 },
-              { feature: 'resource_sensitivity', contribution: 1.18 },
-              { feature: 'environment_risk', contribution: 0.62 }
-            ],
-            modelTraining: fallbackTrainingMeta
+              '/subscriptions/4458cfd6-2c8b-42e3-a2f4-0f3041a4e768/resourceGroups/northwind-finance/providers/Microsoft.Sql/servers/northwind-ledger-sql'
           }
         };
 

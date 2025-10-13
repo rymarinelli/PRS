@@ -30,15 +30,15 @@ Because the backend returns deterministic AI-generated recommendations, you can 
 
 ### How the AI recommendation model works
 - When `backend/server.py` starts, it synthesizes 720 alert records spanning Contoso, Fabrikam, Northwind, and other fictional tenants. Each sample encodes resource depth, URL context, environment risk, and incident counts just like the real extension would observe.
-- The service then trains a logistic-regression head in PyTorch against that dataset. Training completes in under a second on CPU and yields accuracy metrics (size, accuracy, positive ratio, last trained timestamp) that surface in the UI for transparency.
-- Every `/recommend` response includes `modelTraining` metadata so reviewers can confirm the model provenance directly inside the portal overlay or the standalone render demo.
+- The service then trains a logistic-regression head in PyTorch against that dataset. Training completes in under a second on CPU and records accuracy metrics (size, accuracy, positive ratio, last trained timestamp) that are returned alongside recommendations for transparency.
+- Every `/recommend` response includes `modelTraining` metadata so reviewers can inspect the model provenance when looking at the API response, even though the in-portal overlay keeps the presentation intentionally minimal.
 
 ### I just want to *see* the overlay — is there a render?
 Absolutely. For demos or stakeholder reviews you can load a lightweight Azure Portal facsimile that already has the helper rendered in place:
 
 1. From the repo root run a quick static server so browsers can load the shared CSS: `python -m http.server 8000`.
 2. Visit <http://localhost:8000/azure-permissions-exclaim/tools/render-demo.html>.
-3. The page recreates an Azure IAM blade and injects the same shadow-DOM overlay the extension uses. The exclamation button animates inside whichever row you select, calling the live backend when available and falling back to demo payloads otherwise. The panel now highlights the PyTorch training metadata so you can discuss the model lineage while demoing.
+3. The page recreates an Azure IAM blade and injects the same shadow-DOM overlay the extension uses. The exclamation button animates inside whichever row you select, calling the live backend when available and falling back to demo payloads otherwise.
 
 This render relies purely on local assets—it does **not** require an Azure subscription, portal login, or the Flask backend (though it will consume the backend if it is running).
 
@@ -49,7 +49,7 @@ Follow this flow to confirm the end-to-end experience without real Azure access:
 2. Click **Storage account · contoso-retail-prod** to set the hash to a resource that the backend has historical incident data for.
 3. Switch to an actual `https://portal.azure.com` tab (signed in to any account) and paste the copied hash after the base URL. The page will reload to the simulated blade.
 4. Wait for the backend POST in the browser’s devtools network panel: you should see a `POST http://localhost:5001/recommend` returning `hasIssue: true` with `modelScore` and `topFactors` fields.
-5. Verify that the pulsing exclamation badge appears in the lower-right corner of the portal UI. Clicking it should open the panel populated with the AI recommendation (including alert context injected into the summary). Use the **Copy Azure CLI remediation** button to confirm clipboard feedback, and **Open Defender for Cloud details** to ensure a new tab opens with `rid` and `issue` query params.
+5. Verify that the pulsing exclamation badge appears in the lower-right corner of the portal UI. Clicking it should open the panel populated with the AI recommendation (including alert context injected into the summary). Use the **Copy az CLI fix** button to confirm clipboard feedback, and **Open details** to ensure a new tab opens with `rid` and `issue` query params.
 6. Repeat with the **Resource without issue** option in the simulator. The backend will respond with `hasIssue: false` plus a low `modelScore`, and the badge should stay hidden—confirming the negative path works.
 
 ## Architecture overview

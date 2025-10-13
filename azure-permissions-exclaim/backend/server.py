@@ -377,14 +377,22 @@ def enrich_summary(base_summary: str, incident_context: Dict[str, str], risk_sco
     """Add contextual numbers and actors to the base summary copy."""
 
     incident_count = incident_context.get("incidentCount") or "0"
-    principal = incident_context.get("principal") or "an identity"
-    risk_percent = int(round(risk_score * 100))
+    principal = incident_context.get("principal")
 
-    suffix = (
-        f" The model estimates a {risk_percent}% likelihood of mis-scoped permissions "
-        f"after {incident_count} recent alert(s) involving principal '{principal}'."
-    )
-    return f"{base_summary}{suffix}"
+    parts = [base_summary.strip()]
+
+    try:
+        count_value = int(incident_count)
+    except (TypeError, ValueError):
+        count_value = 0
+
+    if count_value > 0:
+        parts.append(f"We detected {count_value} recent alert(s) linked to this resource.")
+
+    if principal:
+        parts.append(f"Principal '{principal}' may have broader access than intended.")
+
+    return " ".join(parts)
 
 
 def build_issue_payload(
@@ -411,7 +419,7 @@ def build_issue_payload(
         "issueId": recommendation["issueId"],
         "title": recommendation["title"],
         "summary": rendered_summary,
-        "source": "Microsoft Defender for Cloud",
+        "source": recommendation.get("source", "Informed by alerts"),
         "panelUrl": recommendation["panelUrl"],
         "azFix": az_fix,
         "resourceId": metadata.resource_id,

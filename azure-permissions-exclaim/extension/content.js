@@ -57,40 +57,12 @@
 
   const badge = document.createElement('span');
   badge.className = 'azra-panel-badge';
-  badge.textContent = 'Microsoft Defender for Cloud';
+  badge.textContent = 'INFORMED BY ALERTS';
   panel.appendChild(badge);
 
   const summary = document.createElement('p');
   summary.className = 'azra-panel-summary';
   panel.appendChild(summary);
-
-  const modelMeta = document.createElement('div');
-  modelMeta.className = 'azra-model-meta';
-  panel.appendChild(modelMeta);
-  modelMeta.hidden = true;
-
-  const scoreLabel = document.createElement('div');
-  scoreLabel.className = 'azra-model-score';
-  modelMeta.appendChild(scoreLabel);
-
-  const trainingLabel = document.createElement('div');
-  trainingLabel.className = 'azra-training-meta';
-  trainingLabel.hidden = true;
-  modelMeta.appendChild(trainingLabel);
-
-  const factorSection = document.createElement('div');
-  factorSection.className = 'azra-factor-section';
-  modelMeta.appendChild(factorSection);
-  factorSection.hidden = true;
-
-  const factorHeading = document.createElement('span');
-  factorHeading.className = 'azra-factor-heading';
-  factorHeading.textContent = 'Primary Defender for Cloud signals:';
-  factorSection.appendChild(factorHeading);
-
-  const factorList = document.createElement('ul');
-  factorList.className = 'azra-factor-list';
-  factorSection.appendChild(factorList);
 
   const actions = document.createElement('div');
   actions.className = 'azra-panel-actions';
@@ -99,13 +71,13 @@
   const copyBtn = document.createElement('button');
   copyBtn.type = 'button';
   copyBtn.className = 'azra-panel-button';
-  copyBtn.textContent = 'Copy Azure CLI remediation';
+  copyBtn.textContent = 'Copy az CLI fix';
   actions.appendChild(copyBtn);
 
   const detailsBtn = document.createElement('button');
   detailsBtn.type = 'button';
   detailsBtn.className = 'azra-panel-button azra-secondary';
-  detailsBtn.textContent = 'Open Defender for Cloud details';
+  detailsBtn.textContent = 'Open details';
   actions.appendChild(detailsBtn);
 
   defaultParent.appendChild(hostEl);
@@ -234,11 +206,6 @@
     panel.hidden = true;
     button.classList.remove('azra-visible');
     button.setAttribute('aria-expanded', 'false');
-    modelMeta.hidden = true;
-    factorSection.hidden = true;
-    factorList.replaceChildren();
-    trainingLabel.textContent = '';
-    trainingLabel.hidden = true;
     syncPlacement({ preferAnchor: false });
   }
 
@@ -249,62 +216,10 @@
     button.classList.add('azra-visible');
     button.setAttribute('aria-expanded', 'false');
     title.textContent = issue.title || 'Defender for Cloud recommendation available';
-    badge.textContent = issue.source || 'Microsoft Defender for Cloud';
+    badge.textContent = (issue.source || 'Informed by alerts').toUpperCase();
     summary.textContent =
       issue.summary ||
       'Review the Microsoft Defender for Cloud guidance below to resolve the access risk.';
-
-    let metaVisible = false;
-
-    if (typeof issue.modelScore === 'number') {
-      const pct = Math.round(issue.modelScore * 100);
-      scoreLabel.textContent = `Risk score: ${pct}% likelihood of excessive access`;
-      metaVisible = true;
-    } else {
-      scoreLabel.textContent = '';
-    }
-
-    const trainingMeta = issue.modelTraining && typeof issue.modelTraining === 'object' ? issue.modelTraining : null;
-    if (trainingMeta) {
-      const parts = [];
-      if (typeof trainingMeta.size === 'number') {
-        parts.push(`trained on ${trainingMeta.size} Defender for Cloud alert simulations`);
-      }
-      if (typeof trainingMeta.accuracy === 'number') {
-        const accPct = Math.round(trainingMeta.accuracy * 1000) / 10;
-        parts.push(`validation accuracy ${accPct}%`);
-      }
-      if (typeof trainingMeta.lastTrained === 'string') {
-        parts.push(`last trained ${trainingMeta.lastTrained}`);
-      }
-      trainingLabel.textContent = parts.join(' · ');
-      trainingLabel.hidden = parts.length === 0;
-      metaVisible = metaVisible || parts.length > 0;
-    } else {
-      trainingLabel.textContent = '';
-      trainingLabel.hidden = true;
-    }
-
-    factorList.replaceChildren();
-    if (Array.isArray(issue.topFactors) && issue.topFactors.length) {
-      issue.topFactors.slice(0, 3).forEach((factor) => {
-        if (!factor || typeof factor.feature !== 'string') {
-          return;
-        }
-        const item = document.createElement('li');
-        item.className = 'azra-factor-item';
-        const contribution = typeof factor.contribution === 'number' ? factor.contribution : 0;
-        const direction = contribution >= 0 ? '↑' : '↓';
-        item.textContent = `${direction} ${factor.feature.replace(/_/g, ' ')} (${Math.abs(contribution).toFixed(2)})`;
-        factorList.appendChild(item);
-      });
-      factorSection.hidden = false;
-      metaVisible = true;
-    } else {
-      factorSection.hidden = true;
-    }
-
-    modelMeta.hidden = !metaVisible;
     syncPlacement({ preferAnchor: true });
   }
 
