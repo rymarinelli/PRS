@@ -3,7 +3,7 @@
   color: #111827;
 }
 
-.mm-container {
+.azra-container {
   position: relative;
   display: flex;
   flex-direction: column;
@@ -11,13 +11,13 @@
   gap: 12px;
 }
 
-:host(.mm-anchored) .mm-container {
+:host(.azra-anchored) .azra-container {
   flex-direction: row-reverse;
   align-items: flex-start;
   gap: 18px;
 }
 
-.mm-exclaim-button {
+.azra-alert-button {
   position: relative;
   width: 56px;
   height: 56px;
@@ -38,44 +38,44 @@
   transform: scale(0.85);
 }
 
-.mm-exclaim-button.mm-visible::after {
+.azra-alert-button.azra-visible::after {
   content: "";
   position: absolute;
   inset: -8px;
   border-radius: 50%;
   border: 3px solid rgba(239, 68, 68, 0.35);
-  animation: mm-pulse 1.8s ease-out infinite;
+  animation: azra-pulse 1.8s ease-out infinite;
 }
 
-:host(.mm-anchored) .mm-exclaim-button {
+:host(.azra-anchored) .azra-alert-button {
   width: 48px;
   height: 48px;
   font-size: 24px;
   box-shadow: 0 12px 24px rgba(239, 68, 68, 0.35);
 }
 
-:host(.mm-anchored) .mm-exclaim-button.mm-visible::after {
+:host(.azra-anchored) .azra-alert-button.azra-visible::after {
   inset: -6px;
   border-width: 2px;
 }
 
-.mm-exclaim-button.mm-visible {
+.azra-alert-button.azra-visible {
   opacity: 1;
   pointer-events: auto;
   transform: scale(1);
 }
 
-.mm-exclaim-button:focus-visible {
+.azra-alert-button:focus-visible {
   outline: 3px solid #facc15;
   outline-offset: 3px;
 }
 
-.mm-exclaim-button:hover {
+.azra-alert-button:hover {
   transform: scale(1.05);
   box-shadow: 0 12px 32px rgba(239, 68, 68, 0.5);
 }
 
-.mm-panel {
+.azra-panel {
   width: 280px;
   border-radius: 12px;
   background: #ffffff;
@@ -87,7 +87,7 @@
   gap: 12px;
 }
 
-:host(.mm-anchored) .mm-panel {
+:host(.azra-anchored) .azra-panel {
   position: relative;
   width: 340px;
   border-radius: 14px;
@@ -96,7 +96,7 @@
   padding: 20px 22px;
 }
 
-:host(.mm-anchored) .mm-panel::after {
+:host(.azra-anchored) .azra-panel::after {
   content: "";
   position: absolute;
   top: 22px;
@@ -110,16 +110,16 @@
   box-shadow: 6px -6px 20px rgba(15, 23, 42, 0.08);
 }
 
-:host(.mm-anchored) .mm-panel-actions {
+:host(.azra-anchored) .azra-panel-actions {
   justify-content: flex-end;
 }
 
-:host(.mm-anchored) .mm-panel-button {
+:host(.azra-anchored) .azra-panel-button {
   flex: 0 0 auto;
   min-width: 132px;
 }
 
-.mm-panel-title {
+.azra-panel-title {
   margin: 0;
   font-size: 16px;
   line-height: 1.2;
@@ -127,7 +127,7 @@
   color: #111827;
 }
 
-.mm-panel-badge {
+.azra-panel-badge {
   align-self: flex-start;
   font-size: 11px;
   font-weight: 600;
@@ -139,14 +139,14 @@
   color: #2563eb;
 }
 
-.mm-panel-summary {
+.azra-panel-summary {
   margin: 0;
   font-size: 14px;
   line-height: 1.45;
   color: #1f2937;
 }
 
-.mm-model-meta {
+.azra-model-meta {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -156,31 +156,31 @@
   border: 1px solid rgba(148, 163, 184, 0.4);
 }
 
-:host(.mm-anchored) .mm-model-meta {
+:host(.azra-anchored) .azra-model-meta {
   background: linear-gradient(135deg, rgba(96, 165, 250, 0.18), rgba(14, 165, 233, 0.12));
   border-color: rgba(59, 130, 246, 0.45);
 }
 
-.mm-model-score {
+.azra-model-score {
   font-size: 13px;
   font-weight: 600;
   color: #0f172a;
 }
 
-.mm-factor-section {
+.azra-factor-section {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.mm-factor-heading {
+.azra-factor-heading {
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: #475569;
 }
 
-.mm-factor-list {
+.azra-factor-list {
   margin: 0;
   padding-left: 16px;
   display: flex;
@@ -190,17 +190,17 @@
   font-size: 12px;
 }
 
-.mm-factor-item::marker {
+.azra-factor-item::marker {
   color: #2563eb;
 }
 
-.mm-panel-actions {
+.azra-panel-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.mm-panel-button {
+.azra-panel-button {
   flex: 1 1 120px;
   border-radius: 8px;
   border: none;
@@ -214,23 +214,23 @@
   box-shadow: 0 10px 25px rgba(15, 23, 42, 0.2);
 }
 
-.mm-panel-button:hover {
+.azra-panel-button:hover {
   transform: translateY(-1px);
   box-shadow: 0 14px 30px rgba(15, 23, 42, 0.25);
 }
 
-.mm-panel-button:focus-visible {
+.azra-panel-button:focus-visible {
   outline: 3px solid #2563eb;
   outline-offset: 2px;
 }
 
-.mm-panel-button.mm-secondary {
+.azra-panel-button.azra-secondary {
   background: #f3f4f6;
   color: #111827;
   box-shadow: none;
 }
 
-.mm-panel-button.mm-secondary:hover {
+.azra-panel-button.azra-secondary:hover {
   background: #e5e7eb;
 }
 
@@ -238,7 +238,7 @@
   display: none !important;
 }
 
-@keyframes mm-pulse {
+@keyframes azra-pulse {
   0% {
     transform: scale(0.9);
     opacity: 0.7;

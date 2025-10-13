@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Azure Portal Overlay Render</title>
+    <title>Azure RBAC Risk Advisor Render</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       :root {
@@ -233,6 +233,7 @@
         border: 1px solid rgba(226, 232, 240, 0.9);
         border-top: none;
         position: relative;
+        transition: box-shadow 0.18s ease, transform 0.18s ease;
       }
 
       .policy-table tbody tr:first-child {
@@ -248,6 +249,20 @@
 
       .policy-table tbody tr + tr {
         margin-top: 8px;
+      }
+
+      .policy-table tbody tr[data-scenario] {
+        cursor: pointer;
+      }
+
+      .policy-table tbody tr[data-scenario]:hover {
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+        transform: translateY(-1px);
+      }
+
+      .policy-table tbody tr.selected {
+        border: 1px solid rgba(59, 130, 246, 0.45);
+        box-shadow: 0 24px 54px rgba(37, 99, 235, 0.25);
       }
 
       .policy-table tbody td {
@@ -275,22 +290,7 @@
         font-size: 12px;
       }
 
-      .issue-row {
-        border: 1px solid rgba(251, 146, 60, 0.6);
-        box-shadow: 0 20px 60px rgba(251, 146, 60, 0.25);
-      }
-
-      .issue-row::before {
-        content: "";
-        position: absolute;
-        inset: -1px 0 auto;
-        height: 3px;
-        background: linear-gradient(90deg, rgba(251, 146, 60, 0.9), rgba(239, 68, 68, 0.85));
-        border-top-left-radius: 14px;
-        border-top-right-radius: 14px;
-      }
-
-      td[data-mm-exclaim-anchor] {
+      td[data-azra-anchor] {
         position: relative;
         padding-right: 110px;
       }
@@ -373,26 +373,26 @@
       </nav>
       <section>
         <div class="section-content">
-          <div class="blade-title">demostore</div>
+          <div class="blade-title">corestoreprod</div>
           <div class="blade-meta">
-            <span>/subscriptions/00000000-0000-0000-0000-000000000000</span>
-            <span>Resource group: demo-rg</span>
+            <span>/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214</span>
+            <span>Resource group: contoso-retail-prod</span>
             <span>Type: Storage account</span>
           </div>
           <div class="blade-banner">
-            <span class="badge">informed by alerts</span>
+            <span class="badge">Defender for Cloud</span>
             <div>
-              <strong>3 Azure Defender alerts detected unusual storage access patterns.</strong>
-              <div>Focus on principals with persistent owner roles to prevent accidental data exposure.</div>
+              <strong>Alerts detected risky access to business-critical storage.</strong>
+              <div>Use Azure RBAC Risk Advisor to review principals that are over-scoped on this account.</div>
             </div>
           </div>
           <div class="table-card">
             <div class="card-header">
               <div>
-                <h3>Role assignments flagged by alerts</h3>
+                <h3>Role assignments surfaced by Azure RBAC Risk Advisor</h3>
                 <p>
-                  Use Permissions Exclamation Helper to scope down risky assignments discovered in the last 24 hours. The helper
-                  surfaces inline remediation steps without leaving the blade.
+                  Click a row to emulate the Azure Portal experience. When Defender for Cloud signals a permissions issue,
+                  the advisor pins an exclamation indicator inline with the assignment and opens remediation guidance.
                 </p>
               </div>
               <div class="card-actions">
@@ -411,40 +411,40 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr data-scenario="aks" data-resource-id="/subscriptions/7f00aa55-cf8c-4e1b-8dd3-4e6c77bdc401/resourceGroups/shared-services/providers/Microsoft.Compute/virtualMachines/ops-utility-01" data-hash="#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F7f00aa55-cf8c-4e1b-8dd3-4e6c77bdc401%2FresourceGroups%2Fshared-services%2Fproviders%2FMicrosoft.Compute%2FvirtualMachines%2Fops-utility-01/access-control" data-has-issue="false">
                   <td>
                     <div class="cell-stack">
-                      <span class="cell-primary">aks-cluster-pipeline</span>
+                      <span class="cell-primary">aks-deploy-automation</span>
                       <span class="cell-secondary">Managed identity · AKS automation</span>
                     </div>
                   </td>
                   <td>
                     <div class="cell-stack">
                       <span class="cell-primary">Storage Blob Data Contributor</span>
-                      <span class="cell-secondary">Assigned 8 days ago</span>
+                      <span class="cell-secondary">Assigned 9 days ago</span>
                     </div>
                   </td>
                   <td>
                     <div class="cell-stack">
-                      <span class="cell-primary">demostore</span>
-                      <span class="cell-secondary">Inherited from subscription</span>
+                      <span class="cell-primary">Subscription scope</span>
+                      <span class="cell-secondary">Inherited from contoso-retail</span>
                     </div>
                   </td>
                   <td>
                     <div class="cell-stack">
                       <span class="cell-primary">6 hours ago</span>
-                      <span class="cell-secondary">Access key rotation</span>
+                      <span class="cell-secondary">Rotated access keys</span>
                     </div>
                   </td>
                   <td>
                     <span class="alert-pill muted">No alerts</span>
                   </td>
                 </tr>
-                <tr class="issue-row">
-                  <td data-mm-exclaim-anchor>
+                <tr data-scenario="storage" class="selected" data-resource-id="/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod" data-hash="#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214%2FresourceGroups%2Fcontoso-retail-prod%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fcorestoreprod/access-control" data-has-issue="true">
+                  <td data-azra-anchor>
                     <div class="cell-stack">
-                      <span class="cell-primary">app-contoso-prod</span>
-                      <span class="cell-secondary">Service principal · App registrations</span>
+                      <span class="cell-primary">spn-contoso-checkout</span>
+                      <span class="cell-secondary">Service principal · Checkout platform</span>
                     </div>
                   </td>
                   <td>
@@ -455,135 +455,375 @@
                   </td>
                   <td>
                     <div class="cell-stack">
-                      <span class="cell-primary">/subscriptions/.../demostore</span>
+                      <span class="cell-primary">corestoreprod</span>
                       <span class="cell-secondary">Resource scope</span>
                     </div>
                   </td>
                   <td>
                     <div class="cell-stack">
-                      <span class="cell-primary">14 minutes ago</span>
+                      <span class="cell-primary">12 minutes ago</span>
                       <span class="cell-secondary">Mass delete operation</span>
                     </div>
                   </td>
                   <td>
-                    <span class="alert-pill critical">3 Alerts</span>
+                    <span class="alert-pill critical">3 alerts</span>
                     <span class="alert-pill">High severity</span>
                   </td>
                 </tr>
-                <tr>
+                <tr data-scenario="sql" data-resource-id="/subscriptions/4458cfd6-2c8b-42e3-a2f4-0f3041a4e768/resourceGroups/northwind-finance/providers/Microsoft.Sql/servers/northwind-ledger-sql" data-hash="#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F4458cfd6-2c8b-42e3-a2f4-0f3041a4e768%2FresourceGroups%2Fnorthwind-finance%2Fproviders%2FMicrosoft.Sql%2Fservers%2Fnorthwind-ledger-sql/access-control" data-has-issue="true">
                   <td>
                     <div class="cell-stack">
-                      <span class="cell-primary">StorageMaintainers</span>
-                      <span class="cell-secondary">Azure AD group · 12 members</span>
+                      <span class="cell-primary">ledger-sync-app</span>
+                      <span class="cell-secondary">Managed identity · Finance data sync</span>
                     </div>
                   </td>
                   <td>
                     <div class="cell-stack">
-                      <span class="cell-primary">Reader</span>
-                      <span class="cell-secondary">Assigned 32 days ago</span>
+                      <span class="cell-primary">SQL DB Contributor</span>
+                      <span class="cell-secondary">Scoped to server</span>
                     </div>
                   </td>
                   <td>
                     <div class="cell-stack">
-                      <span class="cell-primary">Resource group scope</span>
-                      <span class="cell-secondary">demo-rg</span>
+                      <span class="cell-primary">northwind-ledger-sql</span>
+                      <span class="cell-secondary">Resource scope</span>
                     </div>
                   </td>
                   <td>
                     <div class="cell-stack">
-                      <span class="cell-primary">2 days ago</span>
-                      <span class="cell-secondary">List containers</span>
+                      <span class="cell-primary">42 minutes ago</span>
+                      <span class="cell-secondary">Elevation for maintenance</span>
                     </div>
                   </td>
                   <td>
-                    <span class="alert-pill muted">No alerts</span>
+                    <span class="alert-pill">2 alerts</span>
+                    <span class="alert-pill">Medium severity</span>
                   </td>
                 </tr>
               </tbody>
             </table>
-            <p class="table-footnote">Selecting a flagged principal reveals the helper inline, mirroring the Azure Portal data grid experience.</p>
+            <p class="table-footnote">Azure RBAC Risk Advisor mirrors how the live extension attaches to IAM tables—select different assignments to drive the overlay.</p>
           </div>
         </div>
         <div class="legend">
           <span class="legend-dot"></span>
-          <span>Azure Permissions Exclamation Helper overlay</span>
+          <span>Azure RBAC Risk Advisor inline overlay</span>
         </div>
       </section>
     </main>
     <script>
       (async () => {
-        const anchor = document.querySelector('[data-mm-exclaim-anchor]');
-        if (!anchor) {
+        const anchorAttr = 'data-azra-anchor';
+        const initialAnchor = document.querySelector(`[${anchorAttr}]`);
+        if (!initialAnchor) {
           return;
         }
 
+        const overlayCss = await fetch('../extension/overlay.css').then((res) => res.text());
+
         const host = document.createElement('div');
-        host.id = 'mm-exclaim-root';
+        host.id = 'azra-advisor-root';
         host.style.position = 'absolute';
         host.style.bottom = '18px';
         host.style.right = '18px';
         host.style.zIndex = '2147483647';
         host.style.all = 'initial';
-        host.classList.add('mm-anchored');
-        anchor.appendChild(host);
+        host.classList.add('azra-anchored');
+        let currentAnchorCell = initialAnchor;
+
+        function setAnchorCell(cell) {
+          if (!cell) {
+            return;
+          }
+          if (currentAnchorCell && currentAnchorCell !== cell) {
+            currentAnchorCell.removeAttribute(anchorAttr);
+          }
+          if (!cell.hasAttribute(anchorAttr)) {
+            cell.setAttribute(anchorAttr, '');
+          }
+          if (cell !== host.parentElement) {
+            cell.appendChild(host);
+          }
+          currentAnchorCell = cell;
+        }
+
+        setAnchorCell(initialAnchor);
 
         const shadow = host.attachShadow({ mode: 'open' });
 
-        const cssText = await fetch('../extension/overlay.css').then((res) => res.text());
         const style = document.createElement('style');
-        style.textContent = cssText;
+        style.textContent = overlayCss;
         shadow.appendChild(style);
 
         const container = document.createElement('div');
-        container.className = 'mm-container';
+        container.className = 'azra-container';
         shadow.appendChild(container);
 
         const button = document.createElement('button');
-        button.className = 'mm-exclaim-button mm-visible';
+        button.className = 'azra-alert-button';
         button.type = 'button';
         button.textContent = '!';
-        button.setAttribute('aria-expanded', 'true');
+        button.setAttribute('aria-expanded', 'false');
         container.appendChild(button);
 
         const panel = document.createElement('div');
-        panel.className = 'mm-panel';
+        panel.className = 'azra-panel';
+        panel.hidden = true;
         container.appendChild(panel);
 
         const title = document.createElement('h2');
-        title.className = 'mm-panel-title';
-        title.textContent = 'Scope down permissions for service principal';
+        title.className = 'azra-panel-title';
         panel.appendChild(title);
 
         const badge = document.createElement('span');
-        badge.className = 'mm-panel-badge';
+        badge.className = 'azra-panel-badge';
         badge.textContent = 'informed by alerts';
         panel.appendChild(badge);
 
         const summary = document.createElement('p');
-        summary.className = 'mm-panel-summary';
-        summary.textContent =
-          "We detected 3 recent alerts linked to this storage account. Principal 'app-contoso-prod' performed a mass delete a" +
-          'nd still has Storage Blob Data Owner rights.';
+        summary.className = 'azra-panel-summary';
         panel.appendChild(summary);
 
+        const modelMeta = document.createElement('div');
+        modelMeta.className = 'azra-model-meta';
+        modelMeta.hidden = true;
+        panel.appendChild(modelMeta);
+
+        const scoreLabel = document.createElement('div');
+        scoreLabel.className = 'azra-model-score';
+        modelMeta.appendChild(scoreLabel);
+
+        const factorSection = document.createElement('div');
+        factorSection.className = 'azra-factor-section';
+        factorSection.hidden = true;
+        modelMeta.appendChild(factorSection);
+
+        const factorHeading = document.createElement('span');
+        factorHeading.className = 'azra-factor-heading';
+        factorHeading.textContent = 'Top signals:';
+        factorSection.appendChild(factorHeading);
+
+        const factorList = document.createElement('ul');
+        factorList.className = 'azra-factor-list';
+        factorSection.appendChild(factorList);
+
         const actions = document.createElement('div');
-        actions.className = 'mm-panel-actions';
+        actions.className = 'azra-panel-actions';
         panel.appendChild(actions);
 
         const copyBtn = document.createElement('button');
-        copyBtn.className = 'mm-panel-button';
+        copyBtn.className = 'azra-panel-button';
+        copyBtn.type = 'button';
         copyBtn.textContent = 'Copy az CLI fix';
         actions.appendChild(copyBtn);
 
         const detailsBtn = document.createElement('button');
-        detailsBtn.className = 'mm-panel-button mm-secondary';
+        detailsBtn.className = 'azra-panel-button azra-secondary';
+        detailsBtn.type = 'button';
         detailsBtn.textContent = 'Open details';
         actions.appendChild(detailsBtn);
 
+        let currentIssue = null;
+        let panelOpen = false;
+
+        function setPanel(open) {
+          panelOpen = open;
+          panel.hidden = !open;
+          button.setAttribute('aria-expanded', String(open));
+        }
+
+        function clearIssue() {
+          currentIssue = null;
+          setPanel(false);
+          button.classList.remove('azra-visible');
+          summary.textContent = '';
+          title.textContent = '';
+          badge.textContent = 'informed by alerts';
+          modelMeta.hidden = true;
+          factorSection.hidden = true;
+          factorList.replaceChildren();
+        }
+
+        function applyIssue(issue) {
+          currentIssue = issue;
+          title.textContent = issue.title || 'Review permissions insight';
+          summary.textContent = issue.summary || '';
+          badge.textContent = issue.source || 'informed by alerts';
+          button.classList.add('azra-visible');
+
+          if (typeof issue.modelScore === 'number') {
+            scoreLabel.textContent = `Model confidence: ${Math.round(issue.modelScore * 100)}% risk`;
+            modelMeta.hidden = false;
+          } else {
+            scoreLabel.textContent = '';
+          }
+
+          factorList.replaceChildren();
+          if (Array.isArray(issue.topFactors) && issue.topFactors.length) {
+            issue.topFactors.slice(0, 3).forEach((factor) => {
+              if (!factor || typeof factor.feature !== 'string') {
+                return;
+              }
+              const li = document.createElement('li');
+              li.className = 'azra-factor-item';
+              const contribution = typeof factor.contribution === 'number' ? factor.contribution : 0;
+              const direction = contribution >= 0 ? '↑' : '↓';
+              li.textContent = `${direction} ${factor.feature.replace(/_/g, ' ')} (${Math.abs(contribution).toFixed(2)})`;
+              factorList.appendChild(li);
+            });
+            factorSection.hidden = false;
+            modelMeta.hidden = false;
+          } else {
+            factorSection.hidden = true;
+            modelMeta.hidden = scoreLabel.textContent === '';
+          }
+
+          setPanel(true);
+        }
+
+        async function hydrateFromBackend(resourceId, pageHash) {
+          try {
+            const response = await fetch('http://localhost:5001/recommend', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ resourceId, page: pageHash })
+            });
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}`);
+            }
+            return await response.json();
+          } catch (err) {
+            console.warn('Falling back to demo payload', err);
+            return null;
+          }
+        }
+
+        function useIssuePayload(issue, fallback) {
+          if (issue && issue.hasIssue) {
+            applyIssue(issue);
+          } else if (fallback && fallback.hasIssue) {
+            applyIssue(fallback);
+          } else {
+            clearIssue();
+          }
+        }
+
+        async function selectScenario(row, fallback) {
+          document.querySelectorAll('.policy-table tbody tr').forEach((tr) => tr.classList.remove('selected'));
+          row.classList.add('selected');
+
+          const resourceId = row.getAttribute('data-resource-id');
+          const pageHash = row.getAttribute('data-hash') || '';
+          const hasIssue = row.getAttribute('data-has-issue') === 'true';
+
+          const candidateAnchor = row.querySelector('td');
+          setAnchorCell(candidateAnchor || currentAnchorCell);
+
+          if (pageHash) {
+            window.location.hash = pageHash;
+          }
+
+          if (!resourceId || !hasIssue) {
+            clearIssue();
+            return;
+          }
+
+          const backendPayload = await hydrateFromBackend(resourceId, pageHash);
+          useIssuePayload(backendPayload, fallback);
+        }
+
+        const scenarioFallback = {
+          storage: {
+            hasIssue: true,
+            issueId: 'storage-access-excess',
+            title: 'Scope down Storage account data-plane permissions',
+            summary:
+              "Microsoft Defender for Cloud observed 3 suspicious deletes from principal 'spn-contoso-checkout' on corestoreprod. Azure RBAC Risk Advisor recommends removing the standing Storage Blob Data Owner grant.",
+            source: 'informed by alerts',
+            panelUrl: 'https://app.example.com/panel/storage',
+            azFix:
+              "az role assignment delete --assignee spn-contoso-checkout --role 'Storage Blob Data Owner' --scope /subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod",
+            resourceId:
+              '/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod',
+            modelScore: 0.81,
+            topFactors: [
+              { feature: 'resource_sensitivity', contribution: 1.72 },
+              { feature: 'incident_history', contribution: 1.24 },
+              { feature: 'permissions_focus', contribution: 0.68 }
+            ]
+          },
+          sql: {
+            hasIssue: true,
+            issueId: 'sql-admin-risk',
+            title: 'Audit SQL Server administrator assignments',
+            summary:
+              "Finance operations elevated 'ledger-sync-app' on northwind-ledger-sql during a maintenance window. Defender for Cloud correlates the change with lateral movement alerts—review and revoke after runbooks complete.",
+            source: 'informed by alerts',
+            panelUrl: 'https://app.example.com/panel/sql',
+            azFix:
+              "az sql server ad-admin delete --resource-group northwind-finance --server northwind-ledger-sql",
+            resourceId:
+              '/subscriptions/4458cfd6-2c8b-42e3-a2f4-0f3041a4e768/resourceGroups/northwind-finance/providers/Microsoft.Sql/servers/northwind-ledger-sql',
+            modelScore: 0.73,
+            topFactors: [
+              { feature: 'incident_history', contribution: 1.31 },
+              { feature: 'resource_sensitivity', contribution: 1.18 },
+              { feature: 'environment_risk', contribution: 0.62 }
+            ]
+          }
+        };
+
         button.addEventListener('click', () => {
-          const nowHidden = panel.toggleAttribute('hidden');
-          button.setAttribute('aria-expanded', nowHidden ? 'false' : 'true');
+          if (!currentIssue) {
+            return;
+          }
+          setPanel(!panelOpen);
         });
+
+        copyBtn.addEventListener('click', async () => {
+          if (!currentIssue || !currentIssue.azFix) {
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(currentIssue.azFix);
+            const original = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            copyBtn.disabled = true;
+            setTimeout(() => {
+              copyBtn.textContent = original;
+              copyBtn.disabled = false;
+            }, 1800);
+          } catch (err) {
+            console.warn('Clipboard unavailable', err);
+          }
+        });
+
+        detailsBtn.addEventListener('click', () => {
+          if (!currentIssue || !currentIssue.panelUrl) {
+            return;
+          }
+          const url = new URL(currentIssue.panelUrl);
+          if (currentIssue.resourceId) {
+            url.searchParams.set('rid', currentIssue.resourceId);
+          }
+          if (currentIssue.issueId) {
+            url.searchParams.set('issue', currentIssue.issueId);
+          }
+          window.open(url.toString(), '_blank', 'noopener');
+        });
+
+        document.querySelectorAll('.policy-table tbody tr[data-scenario]').forEach((row) => {
+          row.addEventListener('click', () => {
+            const scenario = row.getAttribute('data-scenario');
+            selectScenario(row, scenarioFallback[scenario]);
+          });
+        });
+
+        // kick off with the storage issue scenario
+        const initialRow = document.querySelector('.policy-table tbody tr[data-scenario="storage"]');
+        if (initialRow) {
+          selectScenario(initialRow, scenarioFallback.storage);
+        }
       })();
     </script>
   </body>

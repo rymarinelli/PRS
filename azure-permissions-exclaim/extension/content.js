@@ -1,11 +1,11 @@
 (() => {
-  if (window.__mmExclaimInitialized) {
+  if (window.__azRbacAdvisorInitialized) {
     return;
   }
-  window.__mmExclaimInitialized = true;
+  window.__azRbacAdvisorInitialized = true;
 
   const BACKEND_URL = 'http://localhost:5001/recommend';
-  const hostId = 'mm-exclaim-root';
+  const hostId = 'azra-advisor-root';
 
   let currentIssue = null;
   let panelOpen = false;
@@ -23,7 +23,7 @@
   const defaultParent = document.documentElement;
   let activeAnchor = null;
   let activeAnchorOriginalPosition = null;
-  const anchorAttribute = 'data-mm-exclaim-anchor';
+  const anchorAttribute = 'data-azra-anchor';
 
   const shadow = hostEl.attachShadow({ mode: 'open' });
 
@@ -33,11 +33,11 @@
   shadow.appendChild(link);
 
   const container = document.createElement('div');
-  container.className = 'mm-container';
+  container.className = 'azra-container';
   shadow.appendChild(container);
 
   const button = document.createElement('button');
-  button.className = 'mm-exclaim-button';
+  button.className = 'azra-alert-button';
   button.type = 'button';
   button.setAttribute('aria-label', 'View permission recommendation');
   button.setAttribute('aria-expanded', 'false');
@@ -45,61 +45,61 @@
   container.appendChild(button);
 
   const panel = document.createElement('div');
-  panel.className = 'mm-panel';
+  panel.className = 'azra-panel';
   panel.setAttribute('role', 'dialog');
   panel.setAttribute('aria-live', 'polite');
   panel.hidden = true;
   container.appendChild(panel);
 
   const title = document.createElement('h2');
-  title.className = 'mm-panel-title';
+  title.className = 'azra-panel-title';
   panel.appendChild(title);
 
   const badge = document.createElement('span');
-  badge.className = 'mm-panel-badge';
+  badge.className = 'azra-panel-badge';
   badge.textContent = 'informed by alerts';
   panel.appendChild(badge);
 
   const summary = document.createElement('p');
-  summary.className = 'mm-panel-summary';
+  summary.className = 'azra-panel-summary';
   panel.appendChild(summary);
 
   const modelMeta = document.createElement('div');
-  modelMeta.className = 'mm-model-meta';
+  modelMeta.className = 'azra-model-meta';
   panel.appendChild(modelMeta);
   modelMeta.hidden = true;
 
   const scoreLabel = document.createElement('div');
-  scoreLabel.className = 'mm-model-score';
+  scoreLabel.className = 'azra-model-score';
   modelMeta.appendChild(scoreLabel);
 
   const factorSection = document.createElement('div');
-  factorSection.className = 'mm-factor-section';
+  factorSection.className = 'azra-factor-section';
   modelMeta.appendChild(factorSection);
   factorSection.hidden = true;
 
   const factorHeading = document.createElement('span');
-  factorHeading.className = 'mm-factor-heading';
+  factorHeading.className = 'azra-factor-heading';
   factorHeading.textContent = 'Top signals:';
   factorSection.appendChild(factorHeading);
 
   const factorList = document.createElement('ul');
-  factorList.className = 'mm-factor-list';
+  factorList.className = 'azra-factor-list';
   factorSection.appendChild(factorList);
 
   const actions = document.createElement('div');
-  actions.className = 'mm-panel-actions';
+  actions.className = 'azra-panel-actions';
   panel.appendChild(actions);
 
   const copyBtn = document.createElement('button');
   copyBtn.type = 'button';
-  copyBtn.className = 'mm-panel-button';
+  copyBtn.className = 'azra-panel-button';
   copyBtn.textContent = 'Copy az CLI fix';
   actions.appendChild(copyBtn);
 
   const detailsBtn = document.createElement('button');
   detailsBtn.type = 'button';
-  detailsBtn.className = 'mm-panel-button mm-secondary';
+  detailsBtn.className = 'azra-panel-button azra-secondary';
   detailsBtn.textContent = 'Open details';
   actions.appendChild(detailsBtn);
 
@@ -123,7 +123,7 @@
     hostEl.style.right = '24px';
     hostEl.style.left = '';
     hostEl.style.top = '';
-    hostEl.classList.remove('mm-anchored');
+    hostEl.classList.remove('azra-anchored');
   }
 
   function applyAnchorPlacement(anchor) {
@@ -148,7 +148,7 @@
     hostEl.style.right = '16px';
     hostEl.style.left = '';
     hostEl.style.top = '';
-    hostEl.classList.add('mm-anchored');
+    hostEl.classList.add('azra-anchored');
     activeAnchor = anchor;
   }
 
@@ -227,7 +227,7 @@
     currentIssue = null;
     panelOpen = false;
     panel.hidden = true;
-    button.classList.remove('mm-visible');
+    button.classList.remove('azra-visible');
     button.setAttribute('aria-expanded', 'false');
     modelMeta.hidden = true;
     factorSection.hidden = true;
@@ -239,7 +239,7 @@
     currentIssue = issue;
     panelOpen = false;
     panel.hidden = true;
-    button.classList.add('mm-visible');
+    button.classList.add('azra-visible');
     button.setAttribute('aria-expanded', 'false');
     title.textContent = issue.title || 'Permission recommendation available';
     badge.textContent = issue.source || 'informed by alerts';
@@ -259,7 +259,7 @@
           return;
         }
         const item = document.createElement('li');
-        item.className = 'mm-factor-item';
+        item.className = 'azra-factor-item';
         const contribution = typeof factor.contribution === 'number' ? factor.contribution : 0;
         const direction = contribution >= 0 ? '↑' : '↓';
         item.textContent = `${direction} ${factor.feature.replace(/_/g, ' ')} (${Math.abs(contribution).toFixed(2)})`;

@@ -1,4 +1,4 @@
-"""ML-backed recommendation service used by the Azure Permissions Exclamation Helper.
+"""ML-backed recommendation service used by Azure RBAC Risk Advisor.
 
 This module exposes a Flask application that scores incoming Azure resource IDs
 with a lightweight PyTorch model.  The model was trained offline on synthetic
@@ -103,18 +103,18 @@ RESOURCE_TYPE_PRIORS: Dict[str, float] = {
 # converted into a feature and surfaced back in the summary copy so we can tell
 # a cohesive story in demos.
 INCIDENT_HISTORY: Dict[str, Dict[str, str]] = {
-    "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/demo-rg/providers/Microsoft.Storage/storageAccounts/demostore": {
-        "principal": "demo-sp",
+    "/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod": {
+        "principal": "spn-contoso-checkout",
         "role": "Storage Blob Data Owner",
         "incidentCount": "3",
     },
-    "/subscriptions/11111111-1111-1111-1111-111111111111/resourceGroups/prod-rg/providers/Microsoft.KeyVault/vaults/prodvault": {
-        "principal": "prod-automation",
+    "/subscriptions/bc5f1075-9489-4c9a-9ffb-1e57d6d98c21/resourceGroups/fabrikam-secops/providers/Microsoft.KeyVault/vaults/fabrikam-kv-prod": {
+        "principal": "runbook-automation",
         "role": "Key Vault Administrator",
         "incidentCount": "2",
     },
-    "/subscriptions/22222222-2222-2222-2222-222222222222/resourceGroups/finance-rg/providers/Microsoft.Sql/servers/financesql": {
-        "principal": "finance-service",
+    "/subscriptions/4458cfd6-2c8b-42e3-a2f4-0f3041a4e768/resourceGroups/northwind-finance/providers/Microsoft.Sql/servers/northwind-ledger-sql": {
+        "principal": "ledger-sync-app",
         "role": "SQL DB Contributor",
         "incidentCount": "4",
     },
@@ -204,7 +204,7 @@ KNOWLEDGE_BASE: Dict[str, Recommendation] = {
         "issueId": "storage-access-excess",
         "title": "Scope down Storage account data-plane permissions",
         "summary": (
-            "Our access model flags repeated data-plane alerts tied to service principals with "
+            "Microsoft Defender for Cloud has raised repeated data-plane alerts tied to service principals holding "
             "Storage Blob Data Owner rights."
         ),
         "panelUrl": "https://app.example.com/panel/storage",
@@ -214,7 +214,7 @@ KNOWLEDGE_BASE: Dict[str, Recommendation] = {
         "issueId": "keyvault-secrets-permission",
         "title": "Rotate and reduce Key Vault administrator scope",
         "summary": (
-            "An elevated admin role continues to trigger high-confidence alerts for this Key Vault."
+            "Privileged administrator assignments continue to trigger Defender for Cloud alerts for this Key Vault."
         ),
         "panelUrl": "https://app.example.com/panel/keyvault",
         "azFix": "az role assignment delete --assignee {principal} --role '{role}' --scope {resource_id}",
@@ -239,7 +239,7 @@ KNOWLEDGE_BASE: Dict[str, Recommendation] = {
 DEFAULT_RECOMMENDATION: Recommendation = {
     "issueId": "generic-permission-alert",
     "title": "Verify role assignments on this resource",
-    "summary": "Modelled risk sits above our acceptable threshold when compared against similar resources.",
+    "summary": "Modelled risk sits above the Microsoft Entra permissions analytics baseline for similar resources.",
     "panelUrl": "https://app.example.com/panel/overview",
     "azFix": "az role assignment list --scope {resource_id}",
 }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Azure Permissions Exclamation Helper",
-  "description": "Highlights Azure Portal resources with permission issues and shows recommended fixes.",
+  "name": "Azure RBAC Risk Advisor",
+  "description": "Highlights Azure Portal resources with Defender for Cloud-driven RBAC risks and recommended fixes.",
   "version": "0.1.0",
   "permissions": ["storage", "scripting", "activeTab"],
   "host_permissions": ["https://portal.azure.com/*"],

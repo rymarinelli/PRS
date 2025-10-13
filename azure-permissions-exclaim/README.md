@@ -1,6 +1,6 @@
-# Azure Permissions Exclamation Helper
+# Azure RBAC Risk Advisor
 
-Minimal yet production-ready starter that surfaces permission risk recommendations inside the Azure Portal. It consists of a Manifest v3 browser extension and an AI-backed Flask backend that scores each `resourceId` with a lightweight PyTorch model trained on synthetic alert telemetry.
+Minimal yet production-ready starter that surfaces Azure RBAC risk recommendations inside the Azure Portal. It consists of a Manifest v3 browser extension and an AI-backed Flask backend that scores each `resourceId` with a lightweight PyTorch model trained on synthetic Defender for Cloud telemetry.
 
 ## Quick start
 1. **Start the backend (Flask + PyTorch inference)**
@@ -16,14 +16,14 @@ Minimal yet production-ready starter that surfaces permission risk recommendatio
    - Choose the `azure-permissions-exclaim/extension` directory.
 3. **Simulate portal navigation**
    - Navigate to `https://portal.azure.com/#view/...` using the provided hashes in `tools/portal-sim.html` (copy the hash portion to the portal URL bar or trigger navigation buttons there).
-   - When the backend reports an issue for the active blade’s `resourceId`, a pulsing exclamation badge appears in the bottom-right of the portal. Click it to see the AI-crafted recommendation, copy the `az` fix, or jump to a mock details page.
+   - When the backend reports an issue for the active blade’s `resourceId`, Azure RBAC Risk Advisor pulses an exclamation badge in the bottom-right of the portal. Click it to see the AI-crafted recommendation, copy the `az` fix, or jump to a mock details page.
 
 ### Can I render the UI without Azure access?
 Yes. You do **not** need your own Azure subscription or resource instances. The helper only requires a valid Azure Portal session (even a free account works) plus the local tooling in this repo:
 
 1. Start the Flask backend as described above so `POST /recommend` is available at `http://localhost:5001`. The service will spin up an on-device PyTorch model; no outbound network calls occur.
-2. Open `tools/portal-sim.html` in a separate tab. The buttons there produce realistic Azure blade hashes with URL-encoded `resourceId` values.
-3. Copy one of those hashes (for example, the storage account sample) and paste it after `https://portal.azure.com/` in any portal tab.
+2. Open `tools/portal-sim.html` in a separate tab. The buttons there produce realistic Azure blade hashes (for Contoso storage, Fabrikam Key Vault, and Northwind SQL) with URL-encoded `resourceId` values.
+3. Copy one of those hashes (for example, the Contoso storage sample) and paste it after `https://portal.azure.com/` in any portal tab.
 4. The extension’s content script will parse the hash, call the backend, and render the pulsing exclamation + recommendation panel directly in the live portal UI.
 
 Because the backend returns deterministic AI-generated recommendations, you can iterate entirely locally—the Azure Portal simply provides the layout that hosts the overlay.
@@ -33,15 +33,15 @@ Absolutely. For demos or stakeholder reviews you can load a lightweight Azure Po
 
 1. From the repo root run a quick static server so browsers can load the shared CSS: `python -m http.server 8000`.
 2. Visit <http://localhost:8000/azure-permissions-exclaim/tools/render-demo.html>.
-3. The page recreates an Azure blade shell, complete with a policy table, and injects the same shadow-DOM overlay the extension uses. The exclamation button sits directly inside a flagged table row just like it would on a real IAM blade—you can click it to collapse/expand the panel.
+3. The page recreates an Azure IAM blade and injects the same shadow-DOM overlay the extension uses. The exclamation button animates inside whichever row you select, calling the live backend when available and falling back to demo payloads otherwise.
 
-This render relies purely on local assets—it does **not** require an Azure subscription, portal login, or the Flask backend.
+This render relies purely on local assets—it does **not** require an Azure subscription, portal login, or the Flask backend (though it will consume the backend if it is running).
 
 ## Validation steps
 Follow this flow to confirm the end-to-end experience without real Azure access:
 
 1. In a normal Chrome/Edge tab, open `tools/portal-sim.html` from this repo (via `file://` or a simple `python -m http.server`).
-2. Click **Storage account with issue** to set the hash to a resource that the backend has historical incident data for.
+2. Click **Storage account · contoso-retail-prod** to set the hash to a resource that the backend has historical incident data for.
 3. Switch to an actual `https://portal.azure.com` tab (signed in to any account) and paste the copied hash after the base URL. The page will reload to the simulated blade.
 4. Wait for the backend POST in the browser’s devtools network panel: you should see a `POST http://localhost:5001/recommend` returning `hasIssue: true` with `modelScore` and `topFactors` fields.
 5. Verify that the pulsing exclamation badge appears in the lower-right corner of the portal UI. Clicking it should open the panel populated with the AI recommendation (including alert context injected into the summary). Use the **Copy az CLI fix** button to confirm clipboard feedback, and **Open details** to ensure a new tab opens with `rid` and `issue` query params.
@@ -62,7 +62,7 @@ azure-permissions-exclaim/
 - **Simulator** offers ready-made hashes so you can exercise the parsing logic without Azure credentials.
 
 ## Acceptance criteria checklist
-- [x] Manifest v3 extension scoped to `https://portal.azure.com/*` with pulsing exclamation badge and recommendation panel.
+- [x] Manifest v3 extension scoped to `https://portal.azure.com/*` with pulsing Azure RBAC Risk Advisor badge and recommendation panel.
 - [x] Hash parsing extracts `resourceId` patterns like `#view/.../resourceId/%2Fsubscriptions%2F...`.
 - [x] Backend `POST /recommend` returns AI-scored data keyed by `resourceId`, including `panelUrl`, `azFix`, and model transparency fields.
 - [x] Copy-to-clipboard and “Open details” actions wired to backend response.
