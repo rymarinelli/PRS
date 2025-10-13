@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "Azure Permissions Exclamation Helper",
+  "description": "Highlights Azure Portal resources with permission issues and shows recommended fixes.",
+  "version": "0.1.0",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "host_permissions": ["https://portal.azure.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://portal.azure.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["overlay.css"],
+      "matches": ["https://portal.azure.com/*"]
+    }
+  ]
+}

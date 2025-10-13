@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Azure Portal Hash Simulator</title>
+    <style>
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: #0f172a;
+        color: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 48px 24px;
+      }
+      main {
+        max-width: 720px;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.85);
+        border-radius: 16px;
+        padding: 24px 28px;
+        box-shadow: 0 24px 80px rgba(15, 23, 42, 0.4);
+      }
+      h1 {
+        margin-top: 0;
+        font-size: 28px;
+      }
+      p {
+        line-height: 1.5;
+      }
+      .sample {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        background: rgba(30, 41, 59, 0.8);
+      }
+      code {
+        font-size: 13px;
+        word-break: break-all;
+      }
+      button {
+        align-self: flex-start;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        background: #38bdf8;
+        color: #0f172a;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0ea5e9;
+      }
+      footer {
+        font-size: 13px;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Azure Portal Hash Simulator</h1>
+      <p>
+        Use the buttons below to replace this page's <code>location.hash</code> with Azure-style blade
+        navigation values. When the extension is loaded against <code>https://portal.azure.com</code>, it
+        will parse the <code>resourceId</code> from the hash and call the local backend. You can verify the
+        extraction logic here before trying it in the portal.
+      </p>
+      <div class="sample">
+        <strong>Storage account</strong>
+        <code id="storageHash"></code>
+        <button data-target="storageHash">Apply hash</button>
+      </div>
+      <div class="sample">
+        <strong>Key Vault</strong>
+        <code id="kvHash"></code>
+        <button data-target="kvHash">Apply hash</button>
+      </div>
+      <div class="sample">
+        <strong>No issue example</strong>
+        <code id="noIssueHash"></code>
+        <button data-target="noIssueHash">Apply hash</button>
+      </div>
+    </main>
+    <footer>
+      Tip: open the browser console to watch for <code>resourceId</code> parsing output from
+      <code>content.js</code> when running on the Azure Portal domain.
+    </footer>
+    <script>
+      const samples = {
+        storageHash:
+          "#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F00000000-0000-0000-0000-000000000000%2FresourceGroups%2Fdemo-rg%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fdemostore/permissions",
+        kvHash:
+          "#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F11111111-1111-1111-1111-111111111111%2FresourceGroups%2Fprod-rg%2Fproviders%2FMicrosoft.KeyVault%2Fvaults%2Fprodvault/access-control",
+        noIssueHash:
+          "#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F99999999-9999-9999-9999-999999999999%2FresourceGroups%2Fsample-rg%2Fproviders%2FMicrosoft.Compute%2FvirtualMachines%2Fsamplevm",
+      };
+
+      for (const [id, hashValue] of Object.entries(samples)) {
+        document.getElementById(id).textContent = hashValue;
+      }
+
+      document.querySelectorAll('button[data-target]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const codeEl = document.getElementById(btn.dataset.target);
+          if (codeEl) {
+            location.hash = codeEl.textContent;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
