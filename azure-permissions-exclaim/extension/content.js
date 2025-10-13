@@ -64,6 +64,29 @@
   summary.className = 'mm-panel-summary';
   panel.appendChild(summary);
 
+  const modelMeta = document.createElement('div');
+  modelMeta.className = 'mm-model-meta';
+  panel.appendChild(modelMeta);
+  modelMeta.hidden = true;
+
+  const scoreLabel = document.createElement('div');
+  scoreLabel.className = 'mm-model-score';
+  modelMeta.appendChild(scoreLabel);
+
+  const factorSection = document.createElement('div');
+  factorSection.className = 'mm-factor-section';
+  modelMeta.appendChild(factorSection);
+  factorSection.hidden = true;
+
+  const factorHeading = document.createElement('span');
+  factorHeading.className = 'mm-factor-heading';
+  factorHeading.textContent = 'Top signals:';
+  factorSection.appendChild(factorHeading);
+
+  const factorList = document.createElement('ul');
+  factorList.className = 'mm-factor-list';
+  factorSection.appendChild(factorList);
+
   const actions = document.createElement('div');
   actions.className = 'mm-panel-actions';
   panel.appendChild(actions);
@@ -206,6 +229,9 @@
     panel.hidden = true;
     button.classList.remove('mm-visible');
     button.setAttribute('aria-expanded', 'false');
+    modelMeta.hidden = true;
+    factorSection.hidden = true;
+    factorList.replaceChildren();
     syncPlacement({ preferAnchor: false });
   }
 
@@ -218,6 +244,37 @@
     title.textContent = issue.title || 'Permission recommendation available';
     badge.textContent = issue.source || 'informed by alerts';
     summary.textContent = issue.summary || 'Review the suggested mitigation steps.';
+
+    if (typeof issue.modelScore === 'number') {
+      const pct = Math.round(issue.modelScore * 100);
+      scoreLabel.textContent = `Model confidence: ${pct}% risk`;
+    } else {
+      scoreLabel.textContent = '';
+    }
+
+    factorList.replaceChildren();
+    if (Array.isArray(issue.topFactors) && issue.topFactors.length) {
+      issue.topFactors.slice(0, 3).forEach((factor) => {
+        if (!factor || typeof factor.feature !== 'string') {
+          return;
+        }
+        const item = document.createElement('li');
+        item.className = 'mm-factor-item';
+        const contribution = typeof factor.contribution === 'number' ? factor.contribution : 0;
+        const direction = contribution >= 0 ? '↑' : '↓';
+        item.textContent = `${direction} ${factor.feature.replace(/_/g, ' ')} (${Math.abs(contribution).toFixed(2)})`;
+        factorList.appendChild(item);
+      });
+      modelMeta.hidden = false;
+      factorSection.hidden = false;
+    } else {
+      factorSection.hidden = true;
+      modelMeta.hidden = scoreLabel.textContent === '';
+    }
+
+    if (!factorSection.hidden && scoreLabel.textContent !== '') {
+      modelMeta.hidden = false;
+    }
     syncPlacement({ preferAnchor: true });
   }
 
