@@ -28,6 +28,15 @@ Yes. You do **not** need your own Azure subscription or resource instances. The 
 
 Because the backend returns mock recommendations, you can iterate entirely locally—the Azure Portal simply provides the layout that hosts the overlay.
 
+### I just want to *see* the overlay — is there a render?
+Absolutely. For demos or stakeholder reviews you can load a lightweight Azure Portal facsimile that already has the helper rendered in place:
+
+1. From the repo root run a quick static server so browsers can load the shared CSS: `python -m http.server 8000`.
+2. Visit <http://localhost:8000/azure-permissions-exclaim/tools/render-demo.html>.
+3. The page recreates an Azure blade shell and injects the same shadow-DOM overlay the extension uses. You can click the pulsing badge to collapse/expand the panel.
+
+This render relies purely on local assets—it does **not** require an Azure subscription, portal login, or the Flask backend.
+
 ## Validation steps
 Follow this flow to confirm the end-to-end experience without real Azure access:
 
