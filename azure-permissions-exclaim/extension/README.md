@@ -13,5 +13,7 @@ When the backend reports an issue for the blade’s `resourceId`, the pulsing Az
 
 If the active blade renders a grid cell with the attribute `data-azra-anchor`, the helper automatically anchors itself inside that cell so the exclamation feels native to Azure’s tables. The standalone render demo uses this behaviour to showcase inline policy warnings and now lets you move the overlay between rows by clicking them.
 
+The panel also surfaces the PyTorch training metadata (`modelTraining`) returned by the backend so reviewers can speak to dataset size, training accuracy, and the last synthetic retrain without leaving the UI.
+
 ## Developing against the simulator
 The `tools/portal-sim.html` file can be opened directly in the browser to simulate Azure Portal hash changes. Open the page, click one of the sample links, and the extension will parse the mock `resourceId` and call the backend.

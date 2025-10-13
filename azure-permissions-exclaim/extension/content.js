@@ -73,6 +73,11 @@
   scoreLabel.className = 'azra-model-score';
   modelMeta.appendChild(scoreLabel);
 
+  const trainingLabel = document.createElement('div');
+  trainingLabel.className = 'azra-training-meta';
+  trainingLabel.hidden = true;
+  modelMeta.appendChild(trainingLabel);
+
   const factorSection = document.createElement('div');
   factorSection.className = 'azra-factor-section';
   modelMeta.appendChild(factorSection);
@@ -232,6 +237,8 @@
     modelMeta.hidden = true;
     factorSection.hidden = true;
     factorList.replaceChildren();
+    trainingLabel.textContent = '';
+    trainingLabel.hidden = true;
     syncPlacement({ preferAnchor: false });
   }
 
@@ -245,11 +252,35 @@
     badge.textContent = issue.source || 'informed by alerts';
     summary.textContent = issue.summary || 'Review the suggested mitigation steps.';
 
+    let metaVisible = false;
+
     if (typeof issue.modelScore === 'number') {
       const pct = Math.round(issue.modelScore * 100);
       scoreLabel.textContent = `Model confidence: ${pct}% risk`;
+      metaVisible = true;
     } else {
       scoreLabel.textContent = '';
+    }
+
+    const trainingMeta = issue.modelTraining && typeof issue.modelTraining === 'object' ? issue.modelTraining : null;
+    if (trainingMeta) {
+      const parts = [];
+      if (typeof trainingMeta.size === 'number') {
+        parts.push(`trained on ${trainingMeta.size} simulated alerts`);
+      }
+      if (typeof trainingMeta.accuracy === 'number') {
+        const accPct = Math.round(trainingMeta.accuracy * 1000) / 10;
+        parts.push(`training accuracy ${accPct}%`);
+      }
+      if (typeof trainingMeta.lastTrained === 'string') {
+        parts.push(`last trained ${trainingMeta.lastTrained}`);
+      }
+      trainingLabel.textContent = parts.join(' · ');
+      trainingLabel.hidden = parts.length === 0;
+      metaVisible = metaVisible || parts.length > 0;
+    } else {
+      trainingLabel.textContent = '';
+      trainingLabel.hidden = true;
     }
 
     factorList.replaceChildren();
@@ -265,16 +296,13 @@
         item.textContent = `${direction} ${factor.feature.replace(/_/g, ' ')} (${Math.abs(contribution).toFixed(2)})`;
         factorList.appendChild(item);
       });
-      modelMeta.hidden = false;
       factorSection.hidden = false;
+      metaVisible = true;
     } else {
       factorSection.hidden = true;
-      modelMeta.hidden = scoreLabel.textContent === '';
     }
 
-    if (!factorSection.hidden && scoreLabel.textContent !== '') {
-      modelMeta.hidden = false;
-    }
+    modelMeta.hidden = !metaVisible;
     syncPlacement({ preferAnchor: true });
   }
 

@@ -9,11 +9,14 @@ therefore realistic enough for demos while remaining deterministic.
 
 from __future__ import annotations
 
+import random
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Iterable, List, Optional, Tuple
+from urllib.parse import quote
 
 import torch
+import torch.nn.functional as F
 from flask import Flask, jsonify, request
 
 app = Flask(__name__)
@@ -98,6 +101,134 @@ RESOURCE_TYPE_PRIORS: Dict[str, float] = {
     "Microsoft.Sql/servers": 0.74,
 }
 
+SYNTHETIC_RESOURCE_TYPES = list(RESOURCE_TYPE_PRIORS.keys()) + [
+    "Microsoft.Web/sites",
+    "Microsoft.DocumentDB/databaseAccounts",
+    "Microsoft.OperationalInsights/workspaces",
+]
+
+SYNTHETIC_PAGE_HASHES = [
+    "#view/HubsExtension/BrowseResource/resourceId/{encoded_id}",
+    "#blade/Microsoft_Azure_Permissions/AccessControl/resourceId/{encoded_id}",
+    "#blade/Microsoft_Azure_AD/RoleAssignmentsBlade/resourceId/{encoded_id}",
+    "#view/Microsoft_Azure_Security/SecurityPermissions/resourceId/{encoded_id}",
+    "#blade/Microsoft_Operations/ActivityLogBlade/resourceId/{encoded_id}",
+]
+
+
+def _random_hex(n: int, rng: random.Random) -> str:
+    return "".join(rng.choices("0123456789abcdef", k=n))
+
+
+def _build_resource_id(resource_type: str, company: str, area: str, env: str, rng: random.Random) -> str:
+    subscription = f"{_random_hex(8, rng)}-{_random_hex(4, rng)}-{_random_hex(4, rng)}-{_random_hex(4, rng)}-{_random_hex(12, rng)}"
+    resource_group = f"{company}-{area}-{env}"
+    provider_namespace, type_path = resource_type.split("/", 1)
+    suffix = area.replace("-", "")[:6]
+    if resource_type == "Microsoft.Compute/virtualMachines":
+        name = f"{company[:4]}-{suffix}-vm-{env[:3]}"
+    elif resource_type == "Microsoft.Storage/storageAccounts":
+        name = f"{company[:3]}{suffix}{env[:3]}store"
+    elif resource_type == "Microsoft.KeyVault/vaults":
+        name = f"{company[:4]}-{area[:4]}-kv-{env[:3]}"
+    elif resource_type == "Microsoft.Sql/servers":
+        name = f"{company[:5]}-{area[:4]}-sql"
+    else:
+        name = f"{company[:4]}-{area[:4]}-{env[:3]}"
+    return (
+        f"/subscriptions/{subscription}/resourceGroups/{resource_group}/providers/"
+        f"{provider_namespace}/{type_path}/{name}"
+    )
+
+
+def simulate_alert_training_set(num_samples: int = 720) -> Tuple[torch.Tensor, torch.Tensor]:
+    """Generate a reproducible synthetic dataset representing alert telemetry."""
+
+    rng = random.Random(20240610)
+    torch_generator = torch.Generator().manual_seed(20240610)
+
+    companies = ["contoso", "fabrikam", "northwind", "adventureworks", "wingtip", "proseware"]
+    areas = ["retail", "finance", "security", "payments", "commerce", "identity"]
+    environments = ["prod", "prod", "stage", "dev", "dr"]  # weight toward prod for more risk
+
+    features: List[torch.Tensor] = []
+    labels: List[int] = []
+
+    true_weights = torch.tensor([1.35, 0.9, 2.25, 1.55, 1.1, 1.05], dtype=torch.float32)
+    true_bias = torch.tensor([-2.1], dtype=torch.float32)
+
+    for _ in range(num_samples):
+        resource_type = rng.choice(SYNTHETIC_RESOURCE_TYPES)
+        company = rng.choice(companies)
+        area = rng.choice(areas)
+        env = rng.choice(environments)
+        resource_id = _build_resource_id(resource_type, company, area, env, rng)
+
+        encoded_id = quote(resource_id, safe="")
+        page_template = rng.choice(SYNTHETIC_PAGE_HASHES)
+        page_hash = page_template.format(encoded_id=encoded_id)
+
+        # incident counts skew higher for privileged resource types
+        base_incident_rate = RESOURCE_TYPE_PRIORS.get(resource_type, 0.3)
+        incident_weights = [
+            max(0.35 - base_incident_rate * 0.2, 0.05),
+            0.22,
+            0.18 + base_incident_rate * 0.15,
+            0.12 + base_incident_rate * 0.08,
+            0.08 + base_incident_rate * 0.05,
+            0.05 + base_incident_rate * 0.03,
+        ]
+        incident_levels = [0, 1, 2, 3, 4, 5]
+        incident_count = rng.choices(incident_levels, weights=incident_weights, k=1)[0]
+
+        metadata = parse_resource_id(resource_id)
+        features_tensor = build_feature_vector(metadata, page_hash, float(incident_count))
+
+        noise = torch.randn(1, generator=torch_generator).item() * 0.35
+        logit = (features_tensor * true_weights).sum() + true_bias + noise
+        probability = torch.sigmoid(logit).item()
+        label = 1 if probability >= 0.5 else 0
+
+        features.append(features_tensor)
+        labels.append(label)
+
+    feature_matrix = torch.stack(features)
+    targets = torch.tensor(labels, dtype=torch.float32).unsqueeze(1)
+    return feature_matrix, targets
+
+
+def train_lightweight_model() -> Tuple[torch.Tensor, torch.Tensor, Dict[str, float]]:
+    """Fit a logistic-regression head over the synthetic dataset using PyTorch."""
+
+    feature_matrix, targets = simulate_alert_training_set()
+    model = torch.nn.Linear(feature_matrix.shape[1], 1)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.08)
+
+    for _ in range(600):
+        optimizer.zero_grad(set_to_none=True)
+        logits = model(feature_matrix)
+        loss = F.binary_cross_entropy_with_logits(logits, targets)
+        loss.backward()
+        optimizer.step()
+
+    with torch.no_grad():
+        logits = model(feature_matrix)
+        probabilities = torch.sigmoid(logits).squeeze(1)
+        predicted = (probabilities >= 0.5).float()
+        target_labels = targets.squeeze(1)
+        accuracy = (predicted == target_labels).float().mean().item()
+        positive_ratio = target_labels.mean().item()
+
+    weights = model.weight.detach().squeeze(0).clone()
+    bias = model.bias.detach().clone()
+    metadata = {
+        "size": int(targets.shape[0]),
+        "accuracy": round(accuracy, 4),
+        "positiveRatio": round(positive_ratio, 4),
+        "lastTrained": datetime.utcnow().isoformat(timespec="seconds") + "Z",
+    }
+    return weights, bias, metadata
+
 
 # Demo incident history for a handful of resource IDs.  During scoring this is
 # converted into a feature and surfaced back in the summary copy so we can tell
@@ -167,13 +298,10 @@ def build_feature_vector(metadata: ResourceMetadata, page_hash: str, incident_si
 class PermissionRiskModel(torch.nn.Module):
     """Logistic regression style scorer implemented with PyTorch tensors."""
 
-    def __init__(self) -> None:
+    def __init__(self, weights: torch.Tensor, bias: torch.Tensor) -> None:
         super().__init__()
-        self.register_buffer(
-            "weights",
-            torch.tensor([1.12, 0.84, 2.1, 1.65, 0.92, 1.35], dtype=torch.float32),
-        )
-        self.register_buffer("bias", torch.tensor([-1.55], dtype=torch.float32))
+        self.register_buffer("weights", weights.clone().detach().view(-1))
+        self.register_buffer("bias", bias.clone().detach().view(1))
 
     def forward(self, features: torch.Tensor) -> torch.Tensor:  # type: ignore[override]
         logits = features @ self.weights + self.bias
@@ -187,8 +315,8 @@ class PermissionRiskModel(torch.nn.Module):
         factors.sort(key=lambda item: abs(item[1]), reverse=True)
         return factors
 
-
-MODEL = PermissionRiskModel()
+MODEL_WEIGHTS, MODEL_BIAS, TRAINING_METADATA = train_lightweight_model()
+MODEL = PermissionRiskModel(MODEL_WEIGHTS, MODEL_BIAS)
 
 
 # ---------------------------------------------------------------------------
@@ -293,6 +421,7 @@ def build_issue_payload(
             {"feature": feature, "contribution": round(value, 3)}
             for feature, value in list(top_factors)[:3]
         ],
+        "modelTraining": TRAINING_METADATA,
     }
     return payload
 
@@ -331,6 +460,7 @@ def recommend():
                 "hasIssue": False,
                 "modelScore": round(risk_score, 3),
                 "resourceId": metadata.resource_id,
+                "modelTraining": TRAINING_METADATA,
             }
         )
 

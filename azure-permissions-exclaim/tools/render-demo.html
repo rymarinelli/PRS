@@ -514,6 +514,12 @@
     <script>
       (async () => {
         const anchorAttr = 'data-azra-anchor';
+        const fallbackTrainingMeta = {
+          size: 720,
+          accuracy: 0.885,
+          positiveRatio: 0.46,
+          lastTrained: '2024-06-10T00:00:00Z'
+        };
         const initialAnchor = document.querySelector(`[${anchorAttr}]`);
         if (!initialAnchor) {
           return;
@@ -593,6 +599,11 @@
         scoreLabel.className = 'azra-model-score';
         modelMeta.appendChild(scoreLabel);
 
+        const trainingLabel = document.createElement('div');
+        trainingLabel.className = 'azra-training-meta';
+        trainingLabel.hidden = true;
+        modelMeta.appendChild(trainingLabel);
+
         const factorSection = document.createElement('div');
         factorSection.className = 'azra-factor-section';
         factorSection.hidden = true;
@@ -642,6 +653,8 @@
           modelMeta.hidden = true;
           factorSection.hidden = true;
           factorList.replaceChildren();
+          trainingLabel.textContent = '';
+          trainingLabel.hidden = true;
         }
 
         function applyIssue(issue) {
@@ -651,11 +664,34 @@
           badge.textContent = issue.source || 'informed by alerts';
           button.classList.add('azra-visible');
 
+          let metaVisible = false;
+
           if (typeof issue.modelScore === 'number') {
             scoreLabel.textContent = `Model confidence: ${Math.round(issue.modelScore * 100)}% risk`;
-            modelMeta.hidden = false;
+            metaVisible = true;
           } else {
             scoreLabel.textContent = '';
+          }
+
+          const trainingMeta = issue.modelTraining && typeof issue.modelTraining === 'object' ? issue.modelTraining : null;
+          if (trainingMeta) {
+            const parts = [];
+            if (typeof trainingMeta.size === 'number') {
+              parts.push(`trained on ${trainingMeta.size} simulated alerts`);
+            }
+            if (typeof trainingMeta.accuracy === 'number') {
+              const accPct = Math.round(trainingMeta.accuracy * 1000) / 10;
+              parts.push(`training accuracy ${accPct}%`);
+            }
+            if (typeof trainingMeta.lastTrained === 'string') {
+              parts.push(`last trained ${trainingMeta.lastTrained}`);
+            }
+            trainingLabel.textContent = parts.join(' · ');
+            trainingLabel.hidden = parts.length === 0;
+            metaVisible = metaVisible || parts.length > 0;
+          } else {
+            trainingLabel.textContent = '';
+            trainingLabel.hidden = true;
           }
 
           factorList.replaceChildren();
@@ -672,12 +708,12 @@
               factorList.appendChild(li);
             });
             factorSection.hidden = false;
-            modelMeta.hidden = false;
+            metaVisible = true;
           } else {
             factorSection.hidden = true;
-            modelMeta.hidden = scoreLabel.textContent === '';
           }
 
+          modelMeta.hidden = !metaVisible;
           setPanel(true);
         }
 
@@ -698,11 +734,21 @@
           }
         }
 
-        function useIssuePayload(issue, fallback) {
+        function useIssuePayload(issue, fallback, backendTraining) {
+          const trainingMeta = backendTraining || (issue && issue.modelTraining) || (fallback && fallback.modelTraining) || fallbackTrainingMeta;
+
           if (issue && issue.hasIssue) {
-            applyIssue(issue);
+            const hydrated = { ...issue };
+            if (!hydrated.modelTraining && trainingMeta) {
+              hydrated.modelTraining = trainingMeta;
+            }
+            applyIssue(hydrated);
           } else if (fallback && fallback.hasIssue) {
-            applyIssue(fallback);
+            const fallbackClone = { ...fallback };
+            if (!fallbackClone.modelTraining && trainingMeta) {
+              fallbackClone.modelTraining = trainingMeta;
+            }
+            applyIssue(fallbackClone);
           } else {
             clearIssue();
           }
@@ -729,7 +775,9 @@
           }
 
           const backendPayload = await hydrateFromBackend(resourceId, pageHash);
-          useIssuePayload(backendPayload, fallback);
+          const backendTraining = backendPayload && typeof backendPayload === 'object' ? backendPayload.modelTraining : null;
+          const fallbackClone = fallback ? { ...fallback } : null;
+          useIssuePayload(backendPayload, fallbackClone, backendTraining);
         }
 
         const scenarioFallback = {
@@ -750,7 +798,8 @@
               { feature: 'resource_sensitivity', contribution: 1.72 },
               { feature: 'incident_history', contribution: 1.24 },
               { feature: 'permissions_focus', contribution: 0.68 }
-            ]
+            ],
+            modelTraining: fallbackTrainingMeta
           },
           sql: {
             hasIssue: true,
@@ -769,7 +818,8 @@
               { feature: 'incident_history', contribution: 1.31 },
               { feature: 'resource_sensitivity', contribution: 1.18 },
               { feature: 'environment_risk', contribution: 0.62 }
-            ]
+            ],
+            modelTraining: fallbackTrainingMeta
           }
         };
 

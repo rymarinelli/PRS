@@ -167,6 +167,13 @@
   color: #0f172a;
 }
 
+.azra-training-meta {
+  font-size: 12px;
+  color: #1f2937;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
 .azra-factor-section {
   display: flex;
   flex-direction: column;

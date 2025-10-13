@@ -19,5 +19,11 @@ The API listens on `http://localhost:5001`. The `/recommend` endpoint accepts a 
 - `modelScore` – the normalized risk produced by the PyTorch model.
 - `topFactors` – the dominant engineered features contributing to the score.
 - Alert-driven summaries and CLI fixes tailored to the requested resource.
+- `modelTraining` – metadata (dataset size, accuracy, positive ratio, last training timestamp) describing the on-device model.
 
 CORS is enabled so that the extension can call this endpoint directly from the Azure Portal origin.
+
+## How the model is trained
+- At import time the service synthesizes 720 alert observations across Contoso, Fabrikam, Northwind, AdventureWorks, and other fictional tenants. Each record encodes the `resourceId`, portal hash context, incident counts, and environment risk signals the real portal would produce.
+- A logistic regression head (`torch.nn.Linear`) is then optimized against that dataset using Adam for 600 epochs. This takes well under a second on CPU.
+- The resulting weights, bias, and training telemetry are frozen and used for inference. Every response echoes the training metadata so demos can speak to the model provenance without digging into code.
