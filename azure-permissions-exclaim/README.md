@@ -18,6 +18,16 @@ Minimal yet production-ready starter that surfaces permission risk recommendatio
    - Navigate to `https://portal.azure.com/#view/...` using the provided hashes in `tools/portal-sim.html` (copy the hash portion to the portal URL bar or trigger navigation buttons there).
    - When the backend reports an issue for the active blade’s `resourceId`, a pulsing exclamation badge appears in the bottom-right of the portal. Click it to see the recommendation, copy the `az` fix, or jump to a mock details page.
 
+## Validation steps
+Follow this flow to confirm the end-to-end experience without real Azure access:
+
+1. In a normal Chrome/Edge tab, open `tools/portal-sim.html` from this repo (via `file://` or a simple `python -m http.server`).
+2. Click **Storage account with issue** to set the hash to a resource that exists in the backend `MOCK_ALERTS` map.
+3. Switch to an actual `https://portal.azure.com` tab (signed in to any account) and paste the copied hash after the base URL. The page will reload to the simulated blade.
+4. Wait for the backend POST in the browser’s devtools network panel: you should see a `POST http://localhost:5001/recommend` returning `hasIssue: true`.
+5. Verify that the pulsing exclamation badge appears in the lower-right corner of the portal UI. Clicking it should open the panel populated with the mocked recommendation data. Use the **Copy az CLI fix** button to confirm clipboard feedback, and **Open details** to ensure a new tab opens with `rid` and `issue` query params.
+6. Repeat with the **Resource without issue** option in the simulator. The backend will respond with `hasIssue: false`, and the badge should stay hidden—confirming the negative path works.
+
 ## Architecture overview
 ```
 azure-permissions-exclaim/
