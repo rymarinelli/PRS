@@ -148,14 +148,12 @@
       }
 
       .card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 24px;
+        display: grid;
+        gap: 6px;
       }
 
       .card-header h3 {
-        margin: 0 0 6px;
+        margin: 0;
         font-size: 20px;
       }
 
@@ -166,36 +164,168 @@
         line-height: 1.5;
       }
 
-      .card-actions {
+      .card-command-bar {
         display: flex;
-        gap: 12px;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        background: linear-gradient(0deg, rgba(241, 245, 249, 0.9), rgba(241, 245, 249, 0.9));
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 6px;
+        padding: 8px 12px;
       }
 
-      .ms-btn {
-        border-radius: 6px;
-        border: 1px solid rgba(148, 163, 184, 0.45);
-        background: rgba(15, 23, 42, 0.02);
-        color: #0f172a;
+      .command-left,
+      .command-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .command-right {
+        margin-left: auto;
+      }
+
+      .command-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 4px;
+        border: 1px solid #c8c6c4;
+        background: #ffffff;
+        color: #201f1f;
         font-weight: 600;
-        padding: 8px 14px;
+        padding: 6px 12px;
         font-size: 13px;
         cursor: pointer;
-        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+        height: 32px;
       }
 
-      .ms-btn.primary {
+      .command-btn.primary {
+        background: linear-gradient(90deg, #0078d4, #0f6cbd);
         border-color: transparent;
-        background: linear-gradient(90deg, #2563eb, #1d4ed8);
-        color: white;
-        box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25);
+        color: #ffffff;
+        box-shadow: 0 10px 22px rgba(15, 108, 189, 0.25);
       }
 
-      .ms-btn:hover {
-        background: rgba(37, 99, 235, 0.08);
+      .command-btn:hover {
+        background: rgba(226, 232, 240, 0.8);
+        border-color: #a19f9d;
       }
 
-      .ms-btn.primary:hover {
-        background: linear-gradient(90deg, #1d4ed8, #1e40af);
+      .command-btn.primary:hover {
+        background: linear-gradient(90deg, #0f6cbd, #115ea3);
+        color: #ffffff;
+      }
+
+      .command-btn:focus-visible {
+        outline: 2px solid #ffb900;
+        outline-offset: 2px;
+      }
+
+      .export-btn {
+        min-width: 118px;
+        justify-content: center;
+      }
+
+      .command-dropdown {
+        position: relative;
+      }
+
+      .command-trigger {
+        padding-right: 36px;
+        position: relative;
+      }
+
+      .command-trigger::after {
+        content: "";
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        margin-top: -2px;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid currentColor;
+        transition: transform 0.15s ease;
+      }
+
+      .command-dropdown.open .command-trigger::after {
+        transform: rotate(180deg);
+        margin-top: -4px;
+      }
+
+      .command-dropdown.open .command-trigger {
+        border-color: rgba(15, 108, 189, 0.65);
+        box-shadow: 0 0 0 1px rgba(15, 108, 189, 0.28);
+      }
+
+      .command-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        min-width: 240px;
+        background: #ffffff;
+        border: 1px solid #c8c6c4;
+        border-radius: 6px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+        padding: 8px 0;
+        display: none;
+        z-index: 20;
+      }
+
+      .command-dropdown.open .command-menu {
+        display: block;
+      }
+
+      .command-menu-section {
+        display: block;
+        padding: 6px 16px 4px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #616161;
+        font-weight: 700;
+      }
+
+      .command-menu-divider {
+        height: 1px;
+        margin: 6px 0;
+        background: rgba(148, 163, 184, 0.45);
+      }
+
+      .command-menu button {
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 8px 16px;
+        font-size: 13px;
+        color: #201f1f;
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .command-menu button:hover {
+        background: rgba(0, 120, 212, 0.12);
+        color: #0f6cbd;
+      }
+
+      .command-menu button:focus-visible {
+        outline: 2px solid #ffb900;
+        outline-offset: -2px;
+      }
+
+      .command-menu .shortcut {
+        font-size: 12px;
+        color: #8a8886;
+        font-weight: 400;
+        margin-left: 12px;
       }
 
       .policy-table {
@@ -366,16 +496,43 @@
           </div>
           <div class="table-card">
             <div class="card-header">
-              <div>
-                <h3>Role assignments surfaced by Microsoft Defender for Cloud RBAC Advisor</h3>
-                <p>
-                  Click a row to emulate the Azure Portal experience. When Defender for Cloud signals a permissions issue,
-                  the advisor pins an exclamation indicator inline with the assignment and opens remediation guidance.
-                </p>
+              <h3>Role assignments surfaced by Microsoft Defender for Cloud RBAC Advisor</h3>
+              <p>
+                Click a row to emulate the Azure Portal experience. When Defender for Cloud signals a permissions issue, the
+                advisor pins an exclamation indicator inline with the assignment and opens remediation guidance.
+              </p>
+            </div>
+            <div class="card-command-bar" role="toolbar" aria-label="Role assignment actions">
+              <div class="command-left">
+                <div class="command-dropdown">
+                  <button
+                    class="command-btn command-trigger"
+                    type="button"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-controls="command-menu-add"
+                  >
+                    Add
+                  </button>
+                  <div class="command-menu" id="command-menu-add" role="menu" aria-label="Add actions" hidden>
+                    <span class="command-menu-section">Role assignments</span>
+                    <button type="button" role="menuitem">
+                      Add role assignment
+                      <span class="shortcut">Ctrl+Shift+A</span>
+                    </button>
+                    <button type="button" role="menuitem">Add custom role</button>
+                    <div class="command-menu-divider" role="separator"></div>
+                    <span class="command-menu-section">Add-ins</span>
+                    <button type="button" role="menuitem">Privileged Identity Management</button>
+                    <button type="button" role="menuitem">Microsoft Defender for Cloud RBAC Advisor</button>
+                  </div>
+                </div>
+                <button class="command-btn" type="button">Remove</button>
+                <button class="command-btn" type="button">Edit columns</button>
               </div>
-              <div class="card-actions">
-                <button class="ms-btn">Refresh</button>
-                <button class="ms-btn primary">Export CSV</button>
+              <div class="command-right">
+                <button class="command-btn" type="button">Refresh</button>
+                <button class="command-btn primary export-btn" type="button">Export CSV</button>
               </div>
             </div>
             <table class="policy-table" aria-label="Role assignments">
@@ -491,6 +648,74 @@
     </main>
     <script>
       (async () => {
+        const commandDropdown = document.querySelector('.command-dropdown');
+        if (commandDropdown) {
+          const trigger = commandDropdown.querySelector('.command-trigger');
+          const menu = commandDropdown.querySelector('.command-menu');
+          const menuItems = menu ? Array.from(menu.querySelectorAll('button[role="menuitem"]')) : [];
+          let dropdownOpen = false;
+
+          const setDropdownOpen = (open) => {
+            dropdownOpen = open;
+            commandDropdown.classList.toggle('open', open);
+            if (menu) {
+              menu.hidden = !open;
+            }
+            if (trigger) {
+              trigger.setAttribute('aria-expanded', String(open));
+            }
+          };
+
+          setDropdownOpen(false);
+
+          const closeOnOutside = (event) => {
+            if (!dropdownOpen) {
+              return;
+            }
+            if (event && commandDropdown.contains(event.target)) {
+              return;
+            }
+            setDropdownOpen(false);
+          };
+
+          if (trigger) {
+            trigger.addEventListener('click', (event) => {
+              event.stopPropagation();
+              setDropdownOpen(!dropdownOpen);
+            });
+
+            trigger.addEventListener('keydown', (event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                setDropdownOpen(false);
+              }
+            });
+          }
+
+          if (menu) {
+            menu.addEventListener('keydown', (event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                setDropdownOpen(false);
+                if (trigger) {
+                  trigger.focus();
+                }
+              }
+            });
+          }
+
+          menuItems.forEach((item) => {
+            item.addEventListener('click', () => setDropdownOpen(false));
+          });
+
+          document.addEventListener('click', closeOnOutside);
+          document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              setDropdownOpen(false);
+            }
+          });
+        }
+
         const anchorAttr = 'data-mdfc-anchor';
         const fallbackTrainingMeta = {
           size: 720,
