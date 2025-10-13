@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Microsoft Defender for Cloud RBAC Advisor Render</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: #f5f6fa;
+        color: #201f1f;
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: 60px 1fr;
+      }
+
+      header {
+        background: #0b4f8c;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 0 28px;
+        font-size: 18px;
+        font-weight: 600;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        position: relative;
+        z-index: 1;
+      }
+
+      header span {
+        font-weight: 400;
+        opacity: 0.85;
+        font-size: 15px;
+      }
+
+      main {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        position: relative;
+      }
+
+      nav {
+        background: #f8f9fc;
+        color: #201f1f;
+        padding: 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-height: calc(100vh - 60px);
+        border-right: 1px solid #d0d6e2;
+      }
+
+      nav h2 {
+        color: #0f6cbd;
+        font-size: 12px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+        font-size: 14px;
+      }
+
+      nav li {
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: background 0.2s ease, color 0.2s ease;
+        color: #484644;
+      }
+
+      nav li.active,
+      nav li:hover {
+        background: rgba(0, 120, 212, 0.12);
+        color: #0f6cbd;
+      }
+
+      section {
+        padding: 36px 48px 60px;
+        position: relative;
+        background: #ffffff;
+      }
+
+      .section-content {
+        display: grid;
+        gap: 28px;
+      }
+
+      .blade-title {
+        font-size: 28px;
+        font-weight: 600;
+      }
+
+      .blade-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        font-size: 14px;
+        color: #475569;
+      }
+
+      .blade-banner {
+        background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0));
+        border: 1px solid rgba(96, 165, 250, 0.4);
+        padding: 18px 22px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        max-width: 760px;
+      }
+
+      .blade-banner strong {
+        font-size: 15px;
+      }
+
+      .badge {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #1d4ed8;
+        background: rgba(191, 219, 254, 0.7);
+        border-radius: 999px;
+        padding: 4px 10px;
+      }
+
+      .table-card {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        border: 1px solid #d0d6e2;
+        padding: 24px 28px 28px;
+        max-width: 960px;
+        display: grid;
+        gap: 20px;
+      }
+
+      .card-header {
+        display: grid;
+        gap: 6px;
+      }
+
+      .card-header h3 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .card-header p {
+        margin: 0;
+        color: #334155;
+        max-width: 520px;
+        line-height: 1.5;
+      }
+
+      .card-command-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        background: linear-gradient(0deg, rgba(241, 245, 249, 0.9), rgba(241, 245, 249, 0.9));
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 6px;
+        padding: 8px 12px;
+      }
+
+      .command-left,
+      .command-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .command-right {
+        margin-left: auto;
+      }
+
+      .command-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 4px;
+        border: 1px solid #c8c6c4;
+        background: #ffffff;
+        color: #201f1f;
+        font-weight: 600;
+        padding: 6px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+        height: 32px;
+      }
+
+      .command-btn.primary {
+        background: linear-gradient(90deg, #0078d4, #0f6cbd);
+        border-color: transparent;
+        color: #ffffff;
+        box-shadow: 0 10px 22px rgba(15, 108, 189, 0.25);
+      }
+
+      .command-btn:hover {
+        background: rgba(226, 232, 240, 0.8);
+        border-color: #a19f9d;
+      }
+
+      .command-btn.primary:hover {
+        background: linear-gradient(90deg, #0f6cbd, #115ea3);
+        color: #ffffff;
+      }
+
+      .command-btn:focus-visible {
+        outline: 2px solid #ffb900;
+        outline-offset: 2px;
+      }
+
+      .export-btn {
+        min-width: 118px;
+        justify-content: center;
+      }
+
+      .command-dropdown {
+        position: relative;
+      }
+
+      .command-trigger {
+        padding-right: 36px;
+        position: relative;
+      }
+
+      .command-trigger::after {
+        content: "";
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        width: 0;
+        height: 0;
+        margin-top: -2px;
+        border-left: 5px solid transparent;
+        border-right: 5px solid transparent;
+        border-top: 6px solid currentColor;
+        transition: transform 0.15s ease;
+      }
+
+      .command-dropdown.open .command-trigger::after {
+        transform: rotate(180deg);
+        margin-top: -4px;
+      }
+
+      .command-dropdown.open .command-trigger {
+        border-color: rgba(15, 108, 189, 0.65);
+        box-shadow: 0 0 0 1px rgba(15, 108, 189, 0.28);
+      }
+
+      .command-menu {
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        min-width: 240px;
+        background: #ffffff;
+        border: 1px solid #c8c6c4;
+        border-radius: 6px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+        padding: 8px 0;
+        display: none;
+        z-index: 20;
+      }
+
+      .command-dropdown.open .command-menu {
+        display: block;
+      }
+
+      .command-menu-section {
+        display: block;
+        padding: 6px 16px 4px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #616161;
+        font-weight: 700;
+      }
+
+      .command-menu-divider {
+        height: 1px;
+        margin: 6px 0;
+        background: rgba(148, 163, 184, 0.45);
+      }
+
+      .command-menu button {
+        width: 100%;
+        background: transparent;
+        border: none;
+        padding: 8px 16px;
+        font-size: 13px;
+        color: #201f1f;
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .command-menu button:hover {
+        background: rgba(0, 120, 212, 0.12);
+        color: #0f6cbd;
+      }
+
+      .command-menu button:focus-visible {
+        outline: 2px solid #ffb900;
+        outline-offset: -2px;
+      }
+
+      .command-menu .shortcut {
+        font-size: 12px;
+        color: #8a8886;
+        font-weight: 400;
+        margin-left: 12px;
+      }
+
+      .policy-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+      }
+
+      .policy-table thead th {
+        text-align: left;
+        padding: 14px 18px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-weight: 700;
+        color: #64748b;
+        background: rgba(226, 232, 240, 0.65);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.5);
+      }
+
+      .policy-table tbody tr {
+        background: #ffffff;
+        border: 1px solid #d0d6e2;
+        border-top: none;
+        position: relative;
+        transition: background 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .policy-table tbody tr:first-child {
+        border-top: 1px solid #d0d6e2;
+      }
+
+      .policy-table tbody tr[data-scenario] {
+        cursor: pointer;
+      }
+
+      .policy-table tbody tr[data-scenario]:hover {
+        background: #f0f6fc;
+        box-shadow: 0 0 0 1px rgba(0, 120, 212, 0.25) inset;
+      }
+
+      .policy-table tbody tr.selected {
+        background: #e6f1fb;
+        box-shadow: 0 0 0 2px #0078d4 inset;
+      }
+
+      .policy-table tbody td {
+        padding: 16px 18px 18px;
+        vertical-align: top;
+        color: #1e293b;
+      }
+
+      .policy-table tbody td:last-child {
+        text-align: right;
+      }
+
+      .cell-stack {
+        display: grid;
+        gap: 6px;
+      }
+
+      .cell-primary {
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .cell-secondary {
+        color: #64748b;
+        font-size: 12px;
+      }
+
+      td[data-mdfc-anchor] {
+        position: relative;
+        padding-right: 110px;
+      }
+
+      .alert-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-weight: 600;
+        font-size: 12px;
+        border: 1px solid rgba(0, 120, 212, 0.25);
+        background: rgba(0, 120, 212, 0.12);
+        color: #0f6cbd;
+      }
+
+      .alert-pill.critical {
+        border-color: rgba(208, 52, 56, 0.35);
+        background: rgba(208, 52, 56, 0.12);
+        color: #a4262c;
+      }
+
+      .alert-pill + .alert-pill {
+        margin-left: 8px;
+      }
+
+      .alert-pill.muted {
+        border-color: rgba(148, 163, 184, 0.4);
+        background: rgba(243, 244, 246, 0.9);
+        color: #605e5c;
+      }
+
+      .table-footnote {
+        font-size: 13px;
+        color: #475569;
+        margin: -10px 0 0;
+      }
+
+      .legend {
+        position: absolute;
+        bottom: 32px;
+        left: 48px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 13px;
+        color: #201f1f;
+        background: rgba(255, 255, 255, 0.96);
+        padding: 10px 14px;
+        border-radius: 999px;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0078d4, #0f6cbd);
+        box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      Azure Portal
+      <span>Storage account · Access control (IAM)</span>
+    </header>
+    <main>
+      <nav>
+        <h2>Manage</h2>
+        <ul>
+          <li>Overview</li>
+          <li>Activity log</li>
+          <li class="active">Access control (IAM)</li>
+          <li>Permissions insights</li>
+          <li>Resource locks</li>
+          <li>Diagnostic settings</li>
+        </ul>
+      </nav>
+      <section>
+        <div class="section-content">
+          <div class="blade-title">corestoreprod</div>
+          <div class="blade-meta">
+            <span>/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214</span>
+            <span>Resource group: contoso-retail-prod</span>
+            <span>Type: Storage account</span>
+          </div>
+          <div class="blade-banner">
+            <span class="badge">Defender for Cloud</span>
+            <div>
+              <strong>Alerts detected risky access to business-critical storage.</strong>
+              <div>Use Microsoft Defender for Cloud RBAC Advisor to review principals that are over-scoped on this account.</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="card-header">
+              <h3>Role assignments surfaced by Microsoft Defender for Cloud RBAC Advisor</h3>
+              <p>
+                Click a row to emulate the Azure Portal experience. When Defender for Cloud signals a permissions issue, the
+                advisor pins an exclamation indicator inline with the assignment and opens remediation guidance.
+              </p>
+            </div>
+            <div class="card-command-bar" role="toolbar" aria-label="Role assignment actions">
+              <div class="command-left">
+                <div class="command-dropdown">
+                  <button
+                    class="command-btn command-trigger"
+                    type="button"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-controls="command-menu-add"
+                  >
+                    Add
+                  </button>
+                  <div class="command-menu" id="command-menu-add" role="menu" aria-label="Add actions" hidden>
+                    <span class="command-menu-section">Role assignments</span>
+                    <button type="button" role="menuitem">
+                      Add role assignment
+                      <span class="shortcut">Ctrl+Shift+A</span>
+                    </button>
+                    <button type="button" role="menuitem">Add custom role</button>
+                    <div class="command-menu-divider" role="separator"></div>
+                    <span class="command-menu-section">Add-ins</span>
+                    <button type="button" role="menuitem">Privileged Identity Management</button>
+                    <button type="button" role="menuitem">Microsoft Defender for Cloud RBAC Advisor</button>
+                  </div>
+                </div>
+                <button class="command-btn" type="button">Remove</button>
+                <button class="command-btn" type="button">Edit columns</button>
+              </div>
+              <div class="command-right">
+                <button class="command-btn" type="button">Refresh</button>
+                <button class="command-btn primary export-btn" type="button">Export CSV</button>
+              </div>
+            </div>
+            <table class="policy-table" aria-label="Role assignments">
+              <thead>
+                <tr>
+                  <th>Principal</th>
+                  <th>Role</th>
+                  <th>Scope</th>
+                  <th>Last activity</th>
+                  <th>Alerts</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-scenario="aks" data-resource-id="/subscriptions/7f00aa55-cf8c-4e1b-8dd3-4e6c77bdc401/resourceGroups/shared-services/providers/Microsoft.Compute/virtualMachines/ops-utility-01" data-hash="#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F7f00aa55-cf8c-4e1b-8dd3-4e6c77bdc401%2FresourceGroups%2Fshared-services%2Fproviders%2FMicrosoft.Compute%2FvirtualMachines%2Fops-utility-01/access-control" data-has-issue="false">
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">aks-deploy-automation</span>
+                      <span class="cell-secondary">Managed identity · AKS automation</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">Storage Blob Data Contributor</span>
+                      <span class="cell-secondary">Assigned 9 days ago</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">Subscription scope</span>
+                      <span class="cell-secondary">Inherited from contoso-retail</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">6 hours ago</span>
+                      <span class="cell-secondary">Rotated access keys</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="alert-pill muted">No alerts</span>
+                  </td>
+                </tr>
+                <tr data-scenario="storage" class="selected" data-resource-id="/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod" data-hash="#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214%2FresourceGroups%2Fcontoso-retail-prod%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fcorestoreprod/access-control" data-has-issue="true">
+                  <td data-mdfc-anchor>
+                    <div class="cell-stack">
+                      <span class="cell-primary">spn-contoso-checkout</span>
+                      <span class="cell-secondary">Service principal · Checkout platform</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">Storage Blob Data Owner</span>
+                      <span class="cell-secondary">Standing assignment</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">corestoreprod</span>
+                      <span class="cell-secondary">Resource scope</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">12 minutes ago</span>
+                      <span class="cell-secondary">Mass delete operation</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="alert-pill critical">3 alerts</span>
+                    <span class="alert-pill">High severity</span>
+                  </td>
+                </tr>
+                <tr data-scenario="sql" data-resource-id="/subscriptions/4458cfd6-2c8b-42e3-a2f4-0f3041a4e768/resourceGroups/northwind-finance/providers/Microsoft.Sql/servers/northwind-ledger-sql" data-hash="#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F4458cfd6-2c8b-42e3-a2f4-0f3041a4e768%2FresourceGroups%2Fnorthwind-finance%2Fproviders%2FMicrosoft.Sql%2Fservers%2Fnorthwind-ledger-sql/access-control" data-has-issue="true">
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">ledger-sync-app</span>
+                      <span class="cell-secondary">Managed identity · Finance data sync</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">SQL DB Contributor</span>
+                      <span class="cell-secondary">Scoped to server</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">northwind-ledger-sql</span>
+                      <span class="cell-secondary">Resource scope</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">42 minutes ago</span>
+                      <span class="cell-secondary">Elevation for maintenance</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="alert-pill">2 alerts</span>
+                    <span class="alert-pill">Medium severity</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="table-footnote">Microsoft Defender for Cloud RBAC Advisor mirrors how the live extension attaches to IAM tables—select different assignments to drive the overlay.</p>
+          </div>
+        </div>
+        <div class="legend">
+          <span class="legend-dot"></span>
+          <span>Microsoft Defender for Cloud RBAC Advisor inline overlay</span>
+        </div>
+      </section>
+    </main>
+    <script>
+      (async () => {
+        const commandDropdown = document.querySelector('.command-dropdown');
+        if (commandDropdown) {
+          const trigger = commandDropdown.querySelector('.command-trigger');
+          const menu = commandDropdown.querySelector('.command-menu');
+          const menuItems = menu ? Array.from(menu.querySelectorAll('button[role="menuitem"]')) : [];
+          let dropdownOpen = false;
+
+          const setDropdownOpen = (open) => {
+            dropdownOpen = open;
+            commandDropdown.classList.toggle('open', open);
+            if (menu) {
+              menu.hidden = !open;
+            }
+            if (trigger) {
+              trigger.setAttribute('aria-expanded', String(open));
+            }
+          };
+
+          setDropdownOpen(false);
+
+          const closeOnOutside = (event) => {
+            if (!dropdownOpen) {
+              return;
+            }
+            if (event && commandDropdown.contains(event.target)) {
+              return;
+            }
+            setDropdownOpen(false);
+          };
+
+          if (trigger) {
+            trigger.addEventListener('click', (event) => {
+              event.stopPropagation();
+              setDropdownOpen(!dropdownOpen);
+            });
+
+            trigger.addEventListener('keydown', (event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                setDropdownOpen(false);
+              }
+            });
+          }
+
+          if (menu) {
+            menu.addEventListener('keydown', (event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                setDropdownOpen(false);
+                if (trigger) {
+                  trigger.focus();
+                }
+              }
+            });
+          }
+
+          menuItems.forEach((item) => {
+            item.addEventListener('click', () => setDropdownOpen(false));
+          });
+
+          document.addEventListener('click', closeOnOutside);
+          document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+              setDropdownOpen(false);
+            }
+          });
+        }
+
+        const anchorAttr = 'data-mdfc-anchor';
+        const initialAnchor = document.querySelector(`[${anchorAttr}]`);
+        if (!initialAnchor) {
+          return;
+        }
+
+        const overlayCss = await fetch('../extension/overlay.css').then((res) => res.text());
+
+        const host = document.createElement('div');
+        host.id = 'mdfc-advisor-root';
+        host.style.position = 'absolute';
+        host.style.bottom = '18px';
+        host.style.right = '18px';
+        host.style.zIndex = '2147483647';
+        host.style.all = 'initial';
+        host.classList.add('azra-anchored');
+        let currentAnchorCell = initialAnchor;
+
+        function setAnchorCell(cell) {
+          if (!cell) {
+            return;
+          }
+          if (currentAnchorCell && currentAnchorCell !== cell) {
+            currentAnchorCell.removeAttribute(anchorAttr);
+          }
+          if (!cell.hasAttribute(anchorAttr)) {
+            cell.setAttribute(anchorAttr, '');
+          }
+          if (cell !== host.parentElement) {
+            cell.appendChild(host);
+          }
+          currentAnchorCell = cell;
+        }
+
+        setAnchorCell(initialAnchor);
+
+        const shadow = host.attachShadow({ mode: 'open' });
+
+        const style = document.createElement('style');
+        style.textContent = overlayCss;
+        shadow.appendChild(style);
+
+        const container = document.createElement('div');
+        container.className = 'azra-container';
+        shadow.appendChild(container);
+
+        const button = document.createElement('button');
+        button.className = 'azra-alert-button';
+        button.type = 'button';
+        button.textContent = '!';
+        button.setAttribute('aria-expanded', 'false');
+        container.appendChild(button);
+
+        const panel = document.createElement('div');
+        panel.className = 'azra-panel';
+        panel.hidden = true;
+        container.appendChild(panel);
+
+        const title = document.createElement('h2');
+        title.className = 'azra-panel-title';
+        panel.appendChild(title);
+
+        const badge = document.createElement('span');
+        badge.className = 'azra-panel-badge';
+        badge.textContent = 'INFORMED BY ALERTS';
+        panel.appendChild(badge);
+
+        const summary = document.createElement('p');
+        summary.className = 'azra-panel-summary';
+        panel.appendChild(summary);
+
+        const actions = document.createElement('div');
+        actions.className = 'azra-panel-actions';
+        panel.appendChild(actions);
+
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'azra-panel-button';
+        copyBtn.type = 'button';
+        copyBtn.textContent = 'Copy az CLI fix';
+        actions.appendChild(copyBtn);
+
+        const detailsBtn = document.createElement('button');
+        detailsBtn.className = 'azra-panel-button azra-secondary';
+        detailsBtn.type = 'button';
+        detailsBtn.textContent = 'Open details';
+        actions.appendChild(detailsBtn);
+
+        let currentIssue = null;
+        let panelOpen = false;
+
+        function setPanel(open) {
+          panelOpen = open;
+          panel.hidden = !open;
+          button.setAttribute('aria-expanded', String(open));
+        }
+
+        function clearIssue() {
+          currentIssue = null;
+          setPanel(false);
+          button.classList.remove('azra-visible');
+          summary.textContent = '';
+          title.textContent = '';
+          badge.textContent = 'INFORMED BY ALERTS';
+        }
+
+        function applyIssue(issue) {
+          currentIssue = issue;
+          title.textContent = issue.title || 'Defender for Cloud recommendation available';
+          summary.textContent = issue.summary || '';
+          badge.textContent = (issue.source || 'Informed by alerts').toUpperCase();
+          button.classList.add('azra-visible');
+          setPanel(true);
+        }
+
+        async function hydrateFromBackend(resourceId, pageHash) {
+          try {
+            const response = await fetch('http://localhost:5001/recommend', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ resourceId, page: pageHash })
+            });
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}`);
+            }
+            return await response.json();
+          } catch (err) {
+            console.warn('Falling back to demo payload', err);
+            return null;
+          }
+        }
+
+        function useIssuePayload(issue, fallback) {
+          if (issue && issue.hasIssue) {
+            applyIssue(issue);
+          } else if (fallback && fallback.hasIssue) {
+            applyIssue(fallback);
+          } else {
+            clearIssue();
+          }
+        }
+
+        async function selectScenario(row, fallback) {
+          document.querySelectorAll('.policy-table tbody tr').forEach((tr) => tr.classList.remove('selected'));
+          row.classList.add('selected');
+
+          const resourceId = row.getAttribute('data-resource-id');
+          const pageHash = row.getAttribute('data-hash') || '';
+          const hasIssue = row.getAttribute('data-has-issue') === 'true';
+
+          const candidateAnchor = row.querySelector('td');
+          setAnchorCell(candidateAnchor || currentAnchorCell);
+
+          if (pageHash) {
+            window.location.hash = pageHash;
+          }
+
+          if (!resourceId || !hasIssue) {
+            clearIssue();
+            return;
+          }
+
+          const backendPayload = await hydrateFromBackend(resourceId, pageHash);
+          const fallbackClone = fallback ? { ...fallback } : null;
+          useIssuePayload(backendPayload, fallbackClone);
+        }
+
+        const scenarioFallback = {
+          storage: {
+            hasIssue: true,
+            issueId: 'storage-access-excess',
+            title: 'Scope down Storage account data-plane permissions',
+            summary:
+              "Microsoft Defender for Cloud observed 3 suspicious deletes from principal 'spn-contoso-checkout' on corestoreprod. Microsoft Defender for Cloud RBAC Advisor recommends removing the standing Storage Blob Data Owner grant.",
+            source: 'Microsoft Defender for Cloud',
+            panelUrl: 'https://app.example.com/panel/storage',
+            azFix:
+              "az role assignment delete --assignee spn-contoso-checkout --role 'Storage Blob Data Owner' --scope /subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod",
+            resourceId:
+              '/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod'
+          },
+          sql: {
+            hasIssue: true,
+            issueId: 'sql-admin-risk',
+            title: 'Audit SQL Server administrator assignments',
+            summary:
+              "Finance operations elevated 'ledger-sync-app' on northwind-ledger-sql during a maintenance window. Defender for Cloud correlates the change with lateral movement alerts—review and revoke after runbooks complete.",
+            source: 'Microsoft Defender for Cloud',
+            panelUrl: 'https://app.example.com/panel/sql',
+            azFix:
+              "az sql server ad-admin delete --resource-group northwind-finance --server northwind-ledger-sql",
+            resourceId:
+              '/subscriptions/4458cfd6-2c8b-42e3-a2f4-0f3041a4e768/resourceGroups/northwind-finance/providers/Microsoft.Sql/servers/northwind-ledger-sql'
+          }
+        };
+
+        button.addEventListener('click', () => {
+          if (!currentIssue) {
+            return;
+          }
+          setPanel(!panelOpen);
+        });
+
+        copyBtn.addEventListener('click', async () => {
+          if (!currentIssue || !currentIssue.azFix) {
+            return;
+          }
+          try {
+            await navigator.clipboard.writeText(currentIssue.azFix);
+            const original = copyBtn.textContent;
+            copyBtn.textContent = 'Copied!';
+            copyBtn.disabled = true;
+            setTimeout(() => {
+              copyBtn.textContent = original;
+              copyBtn.disabled = false;
+            }, 1800);
+          } catch (err) {
+            console.warn('Clipboard unavailable', err);
+          }
+        });
+
+        detailsBtn.addEventListener('click', () => {
+          if (!currentIssue || !currentIssue.panelUrl) {
+            return;
+          }
+          const url = new URL(currentIssue.panelUrl);
+          if (currentIssue.resourceId) {
+            url.searchParams.set('rid', currentIssue.resourceId);
+          }
+          if (currentIssue.issueId) {
+            url.searchParams.set('issue', currentIssue.issueId);
+          }
+          window.open(url.toString(), '_blank', 'noopener');
+        });
+
+        document.querySelectorAll('.policy-table tbody tr[data-scenario]').forEach((row) => {
+          row.addEventListener('click', () => {
+            const scenario = row.getAttribute('data-scenario');
+            selectScenario(row, scenarioFallback[scenario]);
+          });
+        });
+
+        // kick off with the storage issue scenario
+        const initialRow = document.querySelector('.policy-table tbody tr[data-scenario="storage"]');
+        if (initialRow) {
+          selectScenario(initialRow, scenarioFallback.storage);
+        }
+      })();
+    </script>
+  </body>
+</html>

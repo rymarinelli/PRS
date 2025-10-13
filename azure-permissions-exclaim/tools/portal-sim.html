@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Azure Portal Hash Simulator</title>
+    <style>
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        background: #0f172a;
+        color: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 48px 24px;
+      }
+      main {
+        max-width: 720px;
+        width: 100%;
+        background: rgba(15, 23, 42, 0.85);
+        border-radius: 16px;
+        padding: 24px 28px;
+        box-shadow: 0 24px 80px rgba(15, 23, 42, 0.4);
+      }
+      h1 {
+        margin-top: 0;
+        font-size: 28px;
+      }
+      p {
+        line-height: 1.5;
+      }
+      .sample {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        background: rgba(30, 41, 59, 0.8);
+      }
+      code {
+        font-size: 13px;
+        word-break: break-all;
+      }
+      button {
+        align-self: flex-start;
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        background: #38bdf8;
+        color: #0f172a;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #0ea5e9;
+      }
+      footer {
+        font-size: 13px;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Azure Portal Hash Simulator</h1>
+      <p>
+        Use the buttons below to replace this page's <code>location.hash</code> with Azure-style blade navigation values. When
+        the Defender for Cloud RBAC Advisor extension is loaded against <code>https://portal.azure.com</code>, it will parse the
+        <code>resourceId</code> from the hash and call the local AI backend. Validate parsing here before trying it in the
+        portal.
+      </p>
+      <div class="sample">
+        <strong>Storage account · contoso-retail-prod</strong>
+        <code id="storageHash"></code>
+        <button data-target="storageHash">Apply hash</button>
+      </div>
+      <div class="sample">
+        <strong>Key Vault · fabrikam-secops</strong>
+        <code id="kvHash"></code>
+        <button data-target="kvHash">Apply hash</button>
+      </div>
+      <div class="sample">
+        <strong>SQL Server · northwind-finance</strong>
+        <code id="sqlHash"></code>
+        <button data-target="sqlHash">Apply hash</button>
+      </div>
+      <div class="sample">
+        <strong>No issue example</strong>
+        <code id="noIssueHash"></code>
+        <button data-target="noIssueHash">Apply hash</button>
+      </div>
+    </main>
+    <footer>
+      Tip: open the browser console to watch for <code>resourceId</code> parsing output from <code>content.js</code> when
+      running on the Azure Portal domain.
+    </footer>
+    <script>
+      const samples = {
+        storageHash:
+          '#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214%2FresourceGroups%2Fcontoso-retail-prod%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fcorestoreprod/access-control',
+        kvHash:
+          '#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2Fbc5f1075-9489-4c9a-9ffb-1e57d6d98c21%2FresourceGroups%2Ffabrikam-secops%2Fproviders%2FMicrosoft.KeyVault%2Fvaults%2Ffabrikam-kv-prod/access-control',
+        sqlHash:
+          '#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F4458cfd6-2c8b-42e3-a2f4-0f3041a4e768%2FresourceGroups%2Fnorthwind-finance%2Fproviders%2FMicrosoft.Sql%2Fservers%2Fnorthwind-ledger-sql/access-control',
+        noIssueHash:
+          '#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F7f00aa55-cf8c-4e1b-8dd3-4e6c77bdc401%2FresourceGroups%2Fshared-services%2Fproviders%2FMicrosoft.Compute%2FvirtualMachines%2Fops-utility-01/access-control'
+      };
+
+      for (const [id, hashValue] of Object.entries(samples)) {
+        document.getElementById(id).textContent = hashValue;
+      }
+
+      document.querySelectorAll('button[data-target]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const codeEl = document.getElementById(btn.dataset.target);
+          if (codeEl) {
+            location.hash = codeEl.textContent;
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
