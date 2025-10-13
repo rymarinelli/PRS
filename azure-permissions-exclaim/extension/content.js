@@ -20,6 +20,11 @@
   hostEl.style.zIndex = '2147483647';
   hostEl.style.all = 'initial';
 
+  const defaultParent = document.documentElement;
+  let activeAnchor = null;
+  let activeAnchorOriginalPosition = null;
+  const anchorAttribute = 'data-mm-exclaim-anchor';
+
   const shadow = hostEl.attachShadow({ mode: 'open' });
 
   const link = document.createElement('link');
@@ -75,7 +80,71 @@
   detailsBtn.textContent = 'Open details';
   actions.appendChild(detailsBtn);
 
-  document.documentElement.appendChild(hostEl);
+  defaultParent.appendChild(hostEl);
+
+  function restoreAnchorPosition() {
+    if (activeAnchor && activeAnchorOriginalPosition !== null) {
+      activeAnchor.style.position = activeAnchorOriginalPosition;
+    }
+    activeAnchor = null;
+    activeAnchorOriginalPosition = null;
+  }
+
+  function applyDefaultPlacement() {
+    if (hostEl.parentElement !== defaultParent) {
+      defaultParent.appendChild(hostEl);
+    }
+    restoreAnchorPosition();
+    hostEl.style.position = 'fixed';
+    hostEl.style.bottom = '24px';
+    hostEl.style.right = '24px';
+    hostEl.style.left = '';
+    hostEl.style.top = '';
+    hostEl.classList.remove('mm-anchored');
+  }
+
+  function applyAnchorPlacement(anchor) {
+    if (!anchor) {
+      applyDefaultPlacement();
+      return;
+    }
+    if (activeAnchor === anchor && hostEl.parentElement === anchor) {
+      return;
+    }
+    restoreAnchorPosition();
+    const computed = window.getComputedStyle(anchor);
+    if (computed.position === 'static') {
+      activeAnchorOriginalPosition = anchor.style.position || '';
+      anchor.style.position = 'relative';
+    } else {
+      activeAnchorOriginalPosition = null;
+    }
+    anchor.appendChild(hostEl);
+    hostEl.style.position = 'absolute';
+    hostEl.style.bottom = '16px';
+    hostEl.style.right = '16px';
+    hostEl.style.left = '';
+    hostEl.style.top = '';
+    hostEl.classList.add('mm-anchored');
+    activeAnchor = anchor;
+  }
+
+  function findAnchor() {
+    return document.querySelector(`[${anchorAttribute}]`);
+  }
+
+  function syncPlacement({ preferAnchor } = { preferAnchor: true }) {
+    if (preferAnchor && currentIssue) {
+      const anchor = findAnchor();
+      if (anchor) {
+        applyAnchorPlacement(anchor);
+        return;
+      }
+    }
+    applyDefaultPlacement();
+  }
+
+  syncPlacement({ preferAnchor: false });
 
   function togglePanel(forceOpen) {
     if (!currentIssue) {
@@ -137,6 +206,7 @@
     panel.hidden = true;
     button.classList.remove('mm-visible');
     button.setAttribute('aria-expanded', 'false');
+    syncPlacement({ preferAnchor: false });
   }
 
   function showIssue(issue) {
@@ -148,6 +218,7 @@
     title.textContent = issue.title || 'Permission recommendation available';
     badge.textContent = issue.source || 'informed by alerts';
     summary.textContent = issue.summary || 'Review the suggested mitigation steps.';
+    syncPlacement({ preferAnchor: true });
   }
 
   async function fetchRecommendation(resourceId) {
@@ -223,6 +294,19 @@
 
   window.addEventListener('hashchange', debouncedHandle);
   window.addEventListener('popstate', debouncedHandle);
+
+  const placementObserver = new MutationObserver(() => {
+    if (currentIssue) {
+      syncPlacement({ preferAnchor: true });
+    }
+  });
+
+  placementObserver.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+    attributes: true,
+    attributeFilter: [anchorAttribute]
+  });
 
   // initial check once DOM ready enough
   debouncedHandle();

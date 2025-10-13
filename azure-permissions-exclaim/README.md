@@ -33,7 +33,7 @@ Absolutely. For demos or stakeholder reviews you can load a lightweight Azure Po
 
 1. From the repo root run a quick static server so browsers can load the shared CSS: `python -m http.server 8000`.
 2. Visit <http://localhost:8000/azure-permissions-exclaim/tools/render-demo.html>.
-3. The page recreates an Azure blade shell and injects the same shadow-DOM overlay the extension uses. You can click the pulsing badge to collapse/expand the panel.
+3. The page recreates an Azure blade shell, complete with a policy table, and injects the same shadow-DOM overlay the extension uses. The exclamation button sits directly inside a flagged table row just like it would on a real IAM blade—you can click it to collapse/expand the panel.
 
 This render relies purely on local assets—it does **not** require an Azure subscription, portal login, or the Flask backend.
 

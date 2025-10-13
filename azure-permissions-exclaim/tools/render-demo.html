@@ -17,7 +17,7 @@
         min-height: 100vh;
         display: grid;
         grid-template-rows: 64px 1fr;
-        background-image: radial-gradient(circle at top left, rgba(14, 165, 233, 0.08), transparent 55%),
+        background-image: radial-gradient(circle at top left, rgba(14, 165, 233, 0.1), transparent 55%),
           radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 45%);
       }
 
@@ -44,7 +44,6 @@
       main {
         display: grid;
         grid-template-columns: 240px 1fr;
-        gap: 0;
         position: relative;
       }
 
@@ -55,6 +54,7 @@
         display: flex;
         flex-direction: column;
         gap: 16px;
+        min-height: calc(100vh - 64px);
       }
 
       nav h2 {
@@ -87,69 +87,247 @@
       }
 
       section {
-        padding: 40px 56px;
+        padding: 40px 56px 72px;
         position: relative;
+        overflow: hidden;
+      }
+
+      section::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at 18% 0%, rgba(14, 116, 144, 0.08), transparent 55%),
+          radial-gradient(circle at 80% 12%, rgba(37, 99, 235, 0.05), transparent 65%);
+        pointer-events: none;
+      }
+
+      .section-content {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 28px;
       }
 
       .blade-title {
         font-size: 28px;
         font-weight: 600;
-        margin-bottom: 12px;
       }
 
       .blade-meta {
         display: flex;
+        flex-wrap: wrap;
         gap: 16px;
         font-size: 14px;
         color: #475569;
       }
 
-      .blade-card {
-        margin-top: 32px;
-        background: white;
-        padding: 24px;
-        border-radius: 16px;
-        box-shadow: 0 12px 36px rgba(15, 23, 42, 0.12);
+      .blade-banner {
+        background: linear-gradient(120deg, rgba(59, 130, 246, 0.12), rgba(59, 130, 246, 0));
+        border: 1px solid rgba(96, 165, 250, 0.4);
+        padding: 18px 22px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        max-width: 760px;
+      }
+
+      .blade-banner strong {
+        font-size: 15px;
+      }
+
+      .badge {
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 700;
+        color: #1d4ed8;
+        background: rgba(191, 219, 254, 0.7);
+        border-radius: 999px;
+        padding: 4px 10px;
+      }
+
+      .table-card {
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 18px;
+        box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        padding: 26px 30px 32px;
+        max-width: 960px;
         display: grid;
-        gap: 18px;
-        max-width: 720px;
+        gap: 22px;
       }
 
-      .blade-card h3 {
-        margin: 0;
-        font-size: 18px;
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 24px;
       }
 
-      .blade-card p {
+      .card-header h3 {
+        margin: 0 0 6px;
+        font-size: 20px;
+      }
+
+      .card-header p {
         margin: 0;
         color: #334155;
-        line-height: 1.55;
+        max-width: 520px;
+        line-height: 1.5;
       }
 
-      .chip-row {
+      .card-actions {
         display: flex;
-        gap: 8px;
+        gap: 12px;
       }
 
-      .chip {
-        font-size: 12px;
-        padding: 4px 10px;
-        border-radius: 999px;
-        background: rgba(15, 118, 110, 0.12);
-        color: #0f766e;
+      .ms-btn {
+        border-radius: 6px;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        background: rgba(15, 23, 42, 0.02);
+        color: #0f172a;
+        font-weight: 600;
+        padding: 8px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
       }
 
-      .demo-caption {
-        margin-top: 420px;
-        max-width: 360px;
+      .ms-btn.primary {
+        border-color: transparent;
+        background: linear-gradient(90deg, #2563eb, #1d4ed8);
+        color: white;
+        box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25);
+      }
+
+      .ms-btn:hover {
+        background: rgba(37, 99, 235, 0.08);
+      }
+
+      .ms-btn.primary:hover {
+        background: linear-gradient(90deg, #1d4ed8, #1e40af);
+      }
+
+      .policy-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 13px;
+      }
+
+      .policy-table thead th {
+        text-align: left;
+        padding: 14px 18px;
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        font-weight: 700;
+        color: #64748b;
+        background: rgba(226, 232, 240, 0.65);
+        border-bottom: 1px solid rgba(148, 163, 184, 0.5);
+      }
+
+      .policy-table tbody tr {
+        background: white;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        border-top: none;
+        position: relative;
+      }
+
+      .policy-table tbody tr:first-child {
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+        border-top: 1px solid rgba(226, 232, 240, 0.9);
+      }
+
+      .policy-table tbody tr:last-child {
+        border-bottom-left-radius: 14px;
+        border-bottom-right-radius: 14px;
+      }
+
+      .policy-table tbody tr + tr {
+        margin-top: 8px;
+      }
+
+      .policy-table tbody td {
+        padding: 16px 18px 18px;
+        vertical-align: top;
         color: #1e293b;
+      }
+
+      .policy-table tbody td:last-child {
+        text-align: right;
+      }
+
+      .cell-stack {
+        display: grid;
+        gap: 6px;
+      }
+
+      .cell-primary {
+        font-weight: 600;
         font-size: 14px;
-        line-height: 1.45;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(6px);
-        padding: 12px 14px;
-        border-radius: 10px;
-        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+      }
+
+      .cell-secondary {
+        color: #64748b;
+        font-size: 12px;
+      }
+
+      .issue-row {
+        border: 1px solid rgba(251, 146, 60, 0.6);
+        box-shadow: 0 20px 60px rgba(251, 146, 60, 0.25);
+      }
+
+      .issue-row::before {
+        content: "";
+        position: absolute;
+        inset: -1px 0 auto;
+        height: 3px;
+        background: linear-gradient(90deg, rgba(251, 146, 60, 0.9), rgba(239, 68, 68, 0.85));
+        border-top-left-radius: 14px;
+        border-top-right-radius: 14px;
+      }
+
+      td[data-mm-exclaim-anchor] {
+        position: relative;
+        padding-right: 110px;
+      }
+
+      .alert-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 6px 12px;
+        font-weight: 600;
+        font-size: 12px;
+        border: 1px solid rgba(14, 116, 144, 0.18);
+        background: rgba(3, 105, 161, 0.08);
+        color: #0e7490;
+      }
+
+      .alert-pill.critical {
+        border-color: rgba(248, 113, 113, 0.5);
+        background: rgba(248, 113, 113, 0.12);
+        color: #b91c1c;
+      }
+
+      .alert-pill + .alert-pill {
+        margin-left: 8px;
+      }
+
+      .alert-pill.muted {
+        border-color: rgba(148, 163, 184, 0.4);
+        background: rgba(148, 163, 184, 0.18);
+        color: #475569;
+      }
+
+      .table-footnote {
+        font-size: 13px;
+        color: #475569;
+        margin: -10px 0 0;
       }
 
       .legend {
@@ -187,33 +365,144 @@
         <ul>
           <li>Overview</li>
           <li>Activity log</li>
-          <li>Access control (IAM)</li>
-          <li class="active">Permissions insights</li>
+          <li class="active">Access control (IAM)</li>
+          <li>Permissions insights</li>
           <li>Resource locks</li>
           <li>Diagnostic settings</li>
         </ul>
       </nav>
       <section>
-        <div class="blade-title">demostore</div>
-        <div class="blade-meta">
-          <span>/subscriptions/00000000-0000-0000-0000-000000000000</span>
-          <span>Resource group: demo-rg</span>
-          <span>Type: Storage account</span>
-        </div>
-        <div class="blade-card">
-          <div class="chip-row">
-            <span class="chip">Identity &amp; Access</span>
-            <span class="chip">Recommendations</span>
+        <div class="section-content">
+          <div class="blade-title">demostore</div>
+          <div class="blade-meta">
+            <span>/subscriptions/00000000-0000-0000-0000-000000000000</span>
+            <span>Resource group: demo-rg</span>
+            <span>Type: Storage account</span>
           </div>
-          <h3>Recommended actions</h3>
-          <p>
-            Review principals with standing permissions on this storage account. The helper surfaces
-            alert-driven recommendations and remediation steps without leaving the blade.
-          </p>
-          <p class="demo-caption">
-            The overlay on the right shows how the extension appears when a recommendation is available. Use the
-            simulator to drive different <code>resourceId</code> values and watch the panel respond.
-          </p>
+          <div class="blade-banner">
+            <span class="badge">informed by alerts</span>
+            <div>
+              <strong>3 Azure Defender alerts detected unusual storage access patterns.</strong>
+              <div>Focus on principals with persistent owner roles to prevent accidental data exposure.</div>
+            </div>
+          </div>
+          <div class="table-card">
+            <div class="card-header">
+              <div>
+                <h3>Role assignments flagged by alerts</h3>
+                <p>
+                  Use Permissions Exclamation Helper to scope down risky assignments discovered in the last 24 hours. The helper
+                  surfaces inline remediation steps without leaving the blade.
+                </p>
+              </div>
+              <div class="card-actions">
+                <button class="ms-btn">Refresh</button>
+                <button class="ms-btn primary">Export CSV</button>
+              </div>
+            </div>
+            <table class="policy-table" aria-label="Role assignments">
+              <thead>
+                <tr>
+                  <th>Principal</th>
+                  <th>Role</th>
+                  <th>Scope</th>
+                  <th>Last activity</th>
+                  <th>Alerts</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">aks-cluster-pipeline</span>
+                      <span class="cell-secondary">Managed identity · AKS automation</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">Storage Blob Data Contributor</span>
+                      <span class="cell-secondary">Assigned 8 days ago</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">demostore</span>
+                      <span class="cell-secondary">Inherited from subscription</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">6 hours ago</span>
+                      <span class="cell-secondary">Access key rotation</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="alert-pill muted">No alerts</span>
+                  </td>
+                </tr>
+                <tr class="issue-row">
+                  <td data-mm-exclaim-anchor>
+                    <div class="cell-stack">
+                      <span class="cell-primary">app-contoso-prod</span>
+                      <span class="cell-secondary">Service principal · App registrations</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">Storage Blob Data Owner</span>
+                      <span class="cell-secondary">Standing assignment</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">/subscriptions/.../demostore</span>
+                      <span class="cell-secondary">Resource scope</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">14 minutes ago</span>
+                      <span class="cell-secondary">Mass delete operation</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="alert-pill critical">3 Alerts</span>
+                    <span class="alert-pill">High severity</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">StorageMaintainers</span>
+                      <span class="cell-secondary">Azure AD group · 12 members</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">Reader</span>
+                      <span class="cell-secondary">Assigned 32 days ago</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">Resource group scope</span>
+                      <span class="cell-secondary">demo-rg</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="cell-stack">
+                      <span class="cell-primary">2 days ago</span>
+                      <span class="cell-secondary">List containers</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="alert-pill muted">No alerts</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <p class="table-footnote">Selecting a flagged principal reveals the helper inline, mirroring the Azure Portal data grid experience.</p>
+          </div>
         </div>
         <div class="legend">
           <span class="legend-dot"></span>
@@ -223,13 +512,20 @@
     </main>
     <script>
       (async () => {
+        const anchor = document.querySelector('[data-mm-exclaim-anchor]');
+        if (!anchor) {
+          return;
+        }
+
         const host = document.createElement('div');
         host.id = 'mm-exclaim-root';
-        host.style.position = 'fixed';
-        host.style.bottom = '36px';
-        host.style.right = '36px';
+        host.style.position = 'absolute';
+        host.style.bottom = '18px';
+        host.style.right = '18px';
         host.style.zIndex = '2147483647';
         host.style.all = 'initial';
+        host.classList.add('mm-anchored');
+        anchor.appendChild(host);
 
         const shadow = host.attachShadow({ mode: 'open' });
 
@@ -266,7 +562,8 @@
         const summary = document.createElement('p');
         summary.className = 'mm-panel-summary';
         summary.textContent =
-          "We detected recent alerts linked to this storage account. Principal 'app-contoso-prod' may have broader access than required.";
+          "We detected 3 recent alerts linked to this storage account. Principal 'app-contoso-prod' performed a mass delete a" +
+          'nd still has Storage Blob Data Owner rights.';
         panel.appendChild(summary);
 
         const actions = document.createElement('div');
@@ -283,11 +580,9 @@
         detailsBtn.textContent = 'Open details';
         actions.appendChild(detailsBtn);
 
-        document.body.appendChild(host);
-
         button.addEventListener('click', () => {
-          panel.toggleAttribute('hidden');
-          button.setAttribute('aria-expanded', panel.hasAttribute('hidden') ? 'false' : 'true');
+          const nowHidden = panel.toggleAttribute('hidden');
+          button.setAttribute('aria-expanded', nowHidden ? 'false' : 'true');
         });
       })();
     </script>

@@ -11,6 +11,12 @@
   gap: 12px;
 }
 
+:host(.mm-anchored) .mm-container {
+  flex-direction: row-reverse;
+  align-items: flex-start;
+  gap: 18px;
+}
+
 .mm-exclaim-button {
   position: relative;
   width: 56px;
@@ -32,12 +38,6 @@
   transform: scale(0.85);
 }
 
-.mm-exclaim-button.mm-visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: scale(1);
-}
-
 .mm-exclaim-button.mm-visible::after {
   content: "";
   position: absolute;
@@ -45,6 +45,24 @@
   border-radius: 50%;
   border: 3px solid rgba(239, 68, 68, 0.35);
   animation: mm-pulse 1.8s ease-out infinite;
+}
+
+:host(.mm-anchored) .mm-exclaim-button {
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  box-shadow: 0 12px 24px rgba(239, 68, 68, 0.35);
+}
+
+:host(.mm-anchored) .mm-exclaim-button.mm-visible::after {
+  inset: -6px;
+  border-width: 2px;
+}
+
+.mm-exclaim-button.mm-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
 }
 
 .mm-exclaim-button:focus-visible {
@@ -67,6 +85,38 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+:host(.mm-anchored) .mm-panel {
+  position: relative;
+  width: 340px;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  padding: 20px 22px;
+}
+
+:host(.mm-anchored) .mm-panel::after {
+  content: "";
+  position: absolute;
+  top: 22px;
+  right: -9px;
+  width: 18px;
+  height: 18px;
+  background: #ffffff;
+  border-top: 1px solid rgba(148, 163, 184, 0.45);
+  border-right: 1px solid rgba(148, 163, 184, 0.45);
+  transform: rotate(45deg);
+  box-shadow: 6px -6px 20px rgba(15, 23, 42, 0.08);
+}
+
+:host(.mm-anchored) .mm-panel-actions {
+  justify-content: flex-end;
+}
+
+:host(.mm-anchored) .mm-panel-button {
+  flex: 0 0 auto;
+  min-width: 132px;
 }
 
 .mm-panel-title {
