@@ -18,6 +18,16 @@ Minimal yet production-ready starter that surfaces permission risk recommendatio
    - Navigate to `https://portal.azure.com/#view/...` using the provided hashes in `tools/portal-sim.html` (copy the hash portion to the portal URL bar or trigger navigation buttons there).
    - When the backend reports an issue for the active blade’s `resourceId`, a pulsing exclamation badge appears in the bottom-right of the portal. Click it to see the recommendation, copy the `az` fix, or jump to a mock details page.
 
+### Can I render the UI without Azure access?
+Yes. You do **not** need your own Azure subscription or resource instances. The helper only requires a valid Azure Portal session (even a free account works) plus the local tooling in this repo:
+
+1. Start the Flask backend as described above so `POST /recommend` is available at `http://localhost:5001`.
+2. Open `tools/portal-sim.html` in a separate tab. The buttons there produce realistic Azure blade hashes with URL-encoded `resourceId` values.
+3. Copy one of those hashes (for example, the storage account sample) and paste it after `https://portal.azure.com/` in any portal tab.
+4. The extension’s content script will parse the hash, call the backend, and render the pulsing exclamation + recommendation panel directly in the live portal UI.
+
+Because the backend returns mock recommendations, you can iterate entirely locally—the Azure Portal simply provides the layout that hosts the overlay.
+
 ## Validation steps
 Follow this flow to confirm the end-to-end experience without real Azure access:
 
