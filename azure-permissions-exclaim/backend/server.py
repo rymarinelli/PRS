@@ -1,4 +1,4 @@
-"""ML-backed recommendation service used by Azure RBAC Risk Advisor.
+"""ML-backed recommendation service used by Microsoft Defender for Cloud RBAC Advisor.
 
 This module exposes a Flask application that scores incoming Azure resource IDs
 with a lightweight PyTorch model.  The model was trained offline on synthetic
@@ -411,7 +411,7 @@ def build_issue_payload(
         "issueId": recommendation["issueId"],
         "title": recommendation["title"],
         "summary": rendered_summary,
-        "source": "informed by alerts",
+        "source": "Microsoft Defender for Cloud",
         "panelUrl": recommendation["panelUrl"],
         "azFix": az_fix,
         "resourceId": metadata.resource_id,

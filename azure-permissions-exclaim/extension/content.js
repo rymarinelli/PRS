@@ -5,7 +5,7 @@
   window.__azRbacAdvisorInitialized = true;
 
   const BACKEND_URL = 'http://localhost:5001/recommend';
-  const hostId = 'azra-advisor-root';
+  const hostId = 'mdfc-advisor-root';
 
   let currentIssue = null;
   let panelOpen = false;
@@ -23,7 +23,7 @@
   const defaultParent = document.documentElement;
   let activeAnchor = null;
   let activeAnchorOriginalPosition = null;
-  const anchorAttribute = 'data-azra-anchor';
+  const anchorAttribute = 'data-mdfc-anchor';
 
   const shadow = hostEl.attachShadow({ mode: 'open' });
 
@@ -39,7 +39,7 @@
   const button = document.createElement('button');
   button.className = 'azra-alert-button';
   button.type = 'button';
-  button.setAttribute('aria-label', 'View permission recommendation');
+  button.setAttribute('aria-label', 'View Defender for Cloud RBAC recommendation');
   button.setAttribute('aria-expanded', 'false');
   button.textContent = '!';
   container.appendChild(button);
@@ -57,7 +57,7 @@
 
   const badge = document.createElement('span');
   badge.className = 'azra-panel-badge';
-  badge.textContent = 'informed by alerts';
+  badge.textContent = 'Microsoft Defender for Cloud';
   panel.appendChild(badge);
 
   const summary = document.createElement('p');
@@ -85,7 +85,7 @@
 
   const factorHeading = document.createElement('span');
   factorHeading.className = 'azra-factor-heading';
-  factorHeading.textContent = 'Top signals:';
+  factorHeading.textContent = 'Primary Defender for Cloud signals:';
   factorSection.appendChild(factorHeading);
 
   const factorList = document.createElement('ul');
@@ -99,13 +99,13 @@
   const copyBtn = document.createElement('button');
   copyBtn.type = 'button';
   copyBtn.className = 'azra-panel-button';
-  copyBtn.textContent = 'Copy az CLI fix';
+  copyBtn.textContent = 'Copy Azure CLI remediation';
   actions.appendChild(copyBtn);
 
   const detailsBtn = document.createElement('button');
   detailsBtn.type = 'button';
   detailsBtn.className = 'azra-panel-button azra-secondary';
-  detailsBtn.textContent = 'Open details';
+  detailsBtn.textContent = 'Open Defender for Cloud details';
   actions.appendChild(detailsBtn);
 
   defaultParent.appendChild(hostEl);
@@ -190,7 +190,7 @@
     try {
       await navigator.clipboard.writeText(currentIssue.azFix);
       const original = copyBtn.textContent;
-      copyBtn.textContent = 'Copied!';
+      copyBtn.textContent = 'Copied to clipboard';
       copyBtn.disabled = true;
       setTimeout(() => {
         copyBtn.textContent = original;
@@ -248,15 +248,17 @@
     panel.hidden = true;
     button.classList.add('azra-visible');
     button.setAttribute('aria-expanded', 'false');
-    title.textContent = issue.title || 'Permission recommendation available';
-    badge.textContent = issue.source || 'informed by alerts';
-    summary.textContent = issue.summary || 'Review the suggested mitigation steps.';
+    title.textContent = issue.title || 'Defender for Cloud recommendation available';
+    badge.textContent = issue.source || 'Microsoft Defender for Cloud';
+    summary.textContent =
+      issue.summary ||
+      'Review the Microsoft Defender for Cloud guidance below to resolve the access risk.';
 
     let metaVisible = false;
 
     if (typeof issue.modelScore === 'number') {
       const pct = Math.round(issue.modelScore * 100);
-      scoreLabel.textContent = `Model confidence: ${pct}% risk`;
+      scoreLabel.textContent = `Risk score: ${pct}% likelihood of excessive access`;
       metaVisible = true;
     } else {
       scoreLabel.textContent = '';
@@ -266,11 +268,11 @@
     if (trainingMeta) {
       const parts = [];
       if (typeof trainingMeta.size === 'number') {
-        parts.push(`trained on ${trainingMeta.size} simulated alerts`);
+        parts.push(`trained on ${trainingMeta.size} Defender for Cloud alert simulations`);
       }
       if (typeof trainingMeta.accuracy === 'number') {
         const accPct = Math.round(trainingMeta.accuracy * 1000) / 10;
-        parts.push(`training accuracy ${accPct}%`);
+        parts.push(`validation accuracy ${accPct}%`);
       }
       if (typeof trainingMeta.lastTrained === 'string') {
         parts.push(`last trained ${trainingMeta.lastTrained}`);

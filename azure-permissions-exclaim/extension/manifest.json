@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Azure RBAC Risk Advisor",
-  "description": "Highlights Azure Portal resources with Defender for Cloud-driven RBAC risks and recommended fixes.",
+  "name": "Microsoft Defender for Cloud RBAC Advisor",
+  "description": "Surfaces Defender for Cloud RBAC recommendations directly in the Azure Portal with actionable fixes.",
   "version": "0.1.0",
   "permissions": ["storage", "scripting", "activeTab"],
   "host_permissions": ["https://portal.azure.com/*"],

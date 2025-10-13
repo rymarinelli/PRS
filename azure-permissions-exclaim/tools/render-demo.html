@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Azure RBAC Risk Advisor Render</title>
+    <title>Microsoft Defender for Cloud RBAC Advisor Render</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       :root {
@@ -12,25 +12,23 @@
       body {
         margin: 0;
         font-family: "Segoe UI", system-ui, sans-serif;
-        background: #f3f4f6;
-        color: #0f172a;
+        background: #f5f6fa;
+        color: #201f1f;
         min-height: 100vh;
         display: grid;
-        grid-template-rows: 64px 1fr;
-        background-image: radial-gradient(circle at top left, rgba(14, 165, 233, 0.1), transparent 55%),
-          radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.08), transparent 45%);
+        grid-template-rows: 60px 1fr;
       }
 
       header {
-        background: linear-gradient(90deg, #0b5cab 0%, #0078d4 100%);
-        color: white;
+        background: #0b4f8c;
+        color: #ffffff;
         display: flex;
         align-items: center;
         gap: 18px;
-        padding: 0 32px;
+        padding: 0 28px;
         font-size: 18px;
         font-weight: 600;
-        box-shadow: 0 6px 14px rgba(15, 23, 42, 0.25);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         position: relative;
         z-index: 1;
       }
@@ -48,18 +46,19 @@
       }
 
       nav {
-        background: #0f172a;
-        color: rgba(241, 245, 249, 0.85);
-        padding: 32px 24px;
+        background: #f8f9fc;
+        color: #201f1f;
+        padding: 24px 20px;
         display: flex;
         flex-direction: column;
         gap: 16px;
-        min-height: calc(100vh - 64px);
+        min-height: calc(100vh - 60px);
+        border-right: 1px solid #d0d6e2;
       }
 
       nav h2 {
-        color: #38bdf8;
-        font-size: 13px;
+        color: #0f6cbd;
+        font-size: 12px;
         letter-spacing: 0.18em;
         text-transform: uppercase;
         margin: 0;
@@ -75,35 +74,25 @@
       }
 
       nav li {
-        padding: 8px 10px;
-        border-radius: 6px;
-        transition: background 0.2s ease;
+        padding: 8px 12px;
+        border-radius: 4px;
+        transition: background 0.2s ease, color 0.2s ease;
+        color: #484644;
       }
 
       nav li.active,
       nav li:hover {
-        background: rgba(56, 189, 248, 0.16);
-        color: white;
+        background: rgba(0, 120, 212, 0.12);
+        color: #0f6cbd;
       }
 
       section {
-        padding: 40px 56px 72px;
+        padding: 36px 48px 60px;
         position: relative;
-        overflow: hidden;
-      }
-
-      section::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: radial-gradient(circle at 18% 0%, rgba(14, 116, 144, 0.08), transparent 55%),
-          radial-gradient(circle at 80% 12%, rgba(37, 99, 235, 0.05), transparent 65%);
-        pointer-events: none;
+        background: #ffffff;
       }
 
       .section-content {
-        position: relative;
-        z-index: 1;
         display: grid;
         gap: 28px;
       }
@@ -148,14 +137,14 @@
       }
 
       .table-card {
-        background: rgba(255, 255, 255, 0.96);
-        border-radius: 18px;
-        box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
-        border: 1px solid rgba(148, 163, 184, 0.2);
-        padding: 26px 30px 32px;
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+        border: 1px solid #d0d6e2;
+        padding: 24px 28px 28px;
         max-width: 960px;
         display: grid;
-        gap: 22px;
+        gap: 20px;
       }
 
       .card-header {
@@ -229,26 +218,15 @@
       }
 
       .policy-table tbody tr {
-        background: white;
-        border: 1px solid rgba(226, 232, 240, 0.9);
+        background: #ffffff;
+        border: 1px solid #d0d6e2;
         border-top: none;
         position: relative;
-        transition: box-shadow 0.18s ease, transform 0.18s ease;
+        transition: background 0.15s ease, box-shadow 0.15s ease;
       }
 
       .policy-table tbody tr:first-child {
-        border-top-left-radius: 14px;
-        border-top-right-radius: 14px;
-        border-top: 1px solid rgba(226, 232, 240, 0.9);
-      }
-
-      .policy-table tbody tr:last-child {
-        border-bottom-left-radius: 14px;
-        border-bottom-right-radius: 14px;
-      }
-
-      .policy-table tbody tr + tr {
-        margin-top: 8px;
+        border-top: 1px solid #d0d6e2;
       }
 
       .policy-table tbody tr[data-scenario] {
@@ -256,13 +234,13 @@
       }
 
       .policy-table tbody tr[data-scenario]:hover {
-        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
-        transform: translateY(-1px);
+        background: #f0f6fc;
+        box-shadow: 0 0 0 1px rgba(0, 120, 212, 0.25) inset;
       }
 
       .policy-table tbody tr.selected {
-        border: 1px solid rgba(59, 130, 246, 0.45);
-        box-shadow: 0 24px 54px rgba(37, 99, 235, 0.25);
+        background: #e6f1fb;
+        box-shadow: 0 0 0 2px #0078d4 inset;
       }
 
       .policy-table tbody td {
@@ -290,7 +268,7 @@
         font-size: 12px;
       }
 
-      td[data-azra-anchor] {
+      td[data-mdfc-anchor] {
         position: relative;
         padding-right: 110px;
       }
@@ -303,15 +281,15 @@
         padding: 6px 12px;
         font-weight: 600;
         font-size: 12px;
-        border: 1px solid rgba(14, 116, 144, 0.18);
-        background: rgba(3, 105, 161, 0.08);
-        color: #0e7490;
+        border: 1px solid rgba(0, 120, 212, 0.25);
+        background: rgba(0, 120, 212, 0.12);
+        color: #0f6cbd;
       }
 
       .alert-pill.critical {
-        border-color: rgba(248, 113, 113, 0.5);
-        background: rgba(248, 113, 113, 0.12);
-        color: #b91c1c;
+        border-color: rgba(208, 52, 56, 0.35);
+        background: rgba(208, 52, 56, 0.12);
+        color: #a4262c;
       }
 
       .alert-pill + .alert-pill {
@@ -320,8 +298,8 @@
 
       .alert-pill.muted {
         border-color: rgba(148, 163, 184, 0.4);
-        background: rgba(148, 163, 184, 0.18);
-        color: #475569;
+        background: rgba(243, 244, 246, 0.9);
+        color: #605e5c;
       }
 
       .table-footnote {
@@ -333,24 +311,24 @@
       .legend {
         position: absolute;
         bottom: 32px;
-        left: 56px;
+        left: 48px;
         display: flex;
         align-items: center;
         gap: 12px;
         font-size: 13px;
-        color: #1f2937;
-        background: rgba(255, 255, 255, 0.92);
-        padding: 10px 12px;
+        color: #201f1f;
+        background: rgba(255, 255, 255, 0.96);
+        padding: 10px 14px;
         border-radius: 999px;
-        box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
       }
 
       .legend-dot {
         width: 10px;
         height: 10px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #f97316, #ef4444);
-        box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.22);
+        background: linear-gradient(135deg, #0078d4, #0f6cbd);
+        box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.2);
       }
     </style>
   </head>
@@ -383,13 +361,13 @@
             <span class="badge">Defender for Cloud</span>
             <div>
               <strong>Alerts detected risky access to business-critical storage.</strong>
-              <div>Use Azure RBAC Risk Advisor to review principals that are over-scoped on this account.</div>
+              <div>Use Microsoft Defender for Cloud RBAC Advisor to review principals that are over-scoped on this account.</div>
             </div>
           </div>
           <div class="table-card">
             <div class="card-header">
               <div>
-                <h3>Role assignments surfaced by Azure RBAC Risk Advisor</h3>
+                <h3>Role assignments surfaced by Microsoft Defender for Cloud RBAC Advisor</h3>
                 <p>
                   Click a row to emulate the Azure Portal experience. When Defender for Cloud signals a permissions issue,
                   the advisor pins an exclamation indicator inline with the assignment and opens remediation guidance.
@@ -441,7 +419,7 @@
                   </td>
                 </tr>
                 <tr data-scenario="storage" class="selected" data-resource-id="/subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod" data-hash="#view/HubsExtension/BrowseResource/resourceId/%2Fsubscriptions%2F2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214%2FresourceGroups%2Fcontoso-retail-prod%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fcorestoreprod/access-control" data-has-issue="true">
-                  <td data-azra-anchor>
+                  <td data-mdfc-anchor>
                     <div class="cell-stack">
                       <span class="cell-primary">spn-contoso-checkout</span>
                       <span class="cell-secondary">Service principal · Checkout platform</span>
@@ -502,18 +480,18 @@
                 </tr>
               </tbody>
             </table>
-            <p class="table-footnote">Azure RBAC Risk Advisor mirrors how the live extension attaches to IAM tables—select different assignments to drive the overlay.</p>
+            <p class="table-footnote">Microsoft Defender for Cloud RBAC Advisor mirrors how the live extension attaches to IAM tables—select different assignments to drive the overlay.</p>
           </div>
         </div>
         <div class="legend">
           <span class="legend-dot"></span>
-          <span>Azure RBAC Risk Advisor inline overlay</span>
+          <span>Microsoft Defender for Cloud RBAC Advisor inline overlay</span>
         </div>
       </section>
     </main>
     <script>
       (async () => {
-        const anchorAttr = 'data-azra-anchor';
+        const anchorAttr = 'data-mdfc-anchor';
         const fallbackTrainingMeta = {
           size: 720,
           accuracy: 0.885,
@@ -528,7 +506,7 @@
         const overlayCss = await fetch('../extension/overlay.css').then((res) => res.text());
 
         const host = document.createElement('div');
-        host.id = 'azra-advisor-root';
+        host.id = 'mdfc-advisor-root';
         host.style.position = 'absolute';
         host.style.bottom = '18px';
         host.style.right = '18px';
@@ -583,7 +561,7 @@
 
         const badge = document.createElement('span');
         badge.className = 'azra-panel-badge';
-        badge.textContent = 'informed by alerts';
+        badge.textContent = 'Microsoft Defender for Cloud';
         panel.appendChild(badge);
 
         const summary = document.createElement('p');
@@ -611,7 +589,7 @@
 
         const factorHeading = document.createElement('span');
         factorHeading.className = 'azra-factor-heading';
-        factorHeading.textContent = 'Top signals:';
+        factorHeading.textContent = 'Primary Defender for Cloud signals:';
         factorSection.appendChild(factorHeading);
 
         const factorList = document.createElement('ul');
@@ -625,13 +603,13 @@
         const copyBtn = document.createElement('button');
         copyBtn.className = 'azra-panel-button';
         copyBtn.type = 'button';
-        copyBtn.textContent = 'Copy az CLI fix';
+        copyBtn.textContent = 'Copy Azure CLI remediation';
         actions.appendChild(copyBtn);
 
         const detailsBtn = document.createElement('button');
         detailsBtn.className = 'azra-panel-button azra-secondary';
         detailsBtn.type = 'button';
-        detailsBtn.textContent = 'Open details';
+        detailsBtn.textContent = 'Open Defender for Cloud details';
         actions.appendChild(detailsBtn);
 
         let currentIssue = null;
@@ -649,7 +627,7 @@
           button.classList.remove('azra-visible');
           summary.textContent = '';
           title.textContent = '';
-          badge.textContent = 'informed by alerts';
+          badge.textContent = 'Microsoft Defender for Cloud';
           modelMeta.hidden = true;
           factorSection.hidden = true;
           factorList.replaceChildren();
@@ -659,15 +637,15 @@
 
         function applyIssue(issue) {
           currentIssue = issue;
-          title.textContent = issue.title || 'Review permissions insight';
+          title.textContent = issue.title || 'Defender for Cloud recommendation available';
           summary.textContent = issue.summary || '';
-          badge.textContent = issue.source || 'informed by alerts';
+          badge.textContent = issue.source || 'Microsoft Defender for Cloud';
           button.classList.add('azra-visible');
 
           let metaVisible = false;
 
           if (typeof issue.modelScore === 'number') {
-            scoreLabel.textContent = `Model confidence: ${Math.round(issue.modelScore * 100)}% risk`;
+            scoreLabel.textContent = `Risk score: ${Math.round(issue.modelScore * 100)}% likelihood of excessive access`;
             metaVisible = true;
           } else {
             scoreLabel.textContent = '';
@@ -677,11 +655,11 @@
           if (trainingMeta) {
             const parts = [];
             if (typeof trainingMeta.size === 'number') {
-              parts.push(`trained on ${trainingMeta.size} simulated alerts`);
+              parts.push(`trained on ${trainingMeta.size} Defender for Cloud alert simulations`);
             }
             if (typeof trainingMeta.accuracy === 'number') {
               const accPct = Math.round(trainingMeta.accuracy * 1000) / 10;
-              parts.push(`training accuracy ${accPct}%`);
+              parts.push(`validation accuracy ${accPct}%`);
             }
             if (typeof trainingMeta.lastTrained === 'string') {
               parts.push(`last trained ${trainingMeta.lastTrained}`);
@@ -786,8 +764,8 @@
             issueId: 'storage-access-excess',
             title: 'Scope down Storage account data-plane permissions',
             summary:
-              "Microsoft Defender for Cloud observed 3 suspicious deletes from principal 'spn-contoso-checkout' on corestoreprod. Azure RBAC Risk Advisor recommends removing the standing Storage Blob Data Owner grant.",
-            source: 'informed by alerts',
+              "Microsoft Defender for Cloud observed 3 suspicious deletes from principal 'spn-contoso-checkout' on corestoreprod. Microsoft Defender for Cloud RBAC Advisor recommends removing the standing Storage Blob Data Owner grant.",
+            source: 'Microsoft Defender for Cloud',
             panelUrl: 'https://app.example.com/panel/storage',
             azFix:
               "az role assignment delete --assignee spn-contoso-checkout --role 'Storage Blob Data Owner' --scope /subscriptions/2b51c4a0-3e70-4d9e-b26d-8f4f1dce0214/resourceGroups/contoso-retail-prod/providers/Microsoft.Storage/storageAccounts/corestoreprod",
@@ -807,7 +785,7 @@
             title: 'Audit SQL Server administrator assignments',
             summary:
               "Finance operations elevated 'ledger-sync-app' on northwind-ledger-sql during a maintenance window. Defender for Cloud correlates the change with lateral movement alerts—review and revoke after runbooks complete.",
-            source: 'informed by alerts',
+            source: 'Microsoft Defender for Cloud',
             panelUrl: 'https://app.example.com/panel/sql',
             azFix:
               "az sql server ad-admin delete --resource-group northwind-finance --server northwind-ledger-sql",

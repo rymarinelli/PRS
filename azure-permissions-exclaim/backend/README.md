@@ -1,6 +1,6 @@
 # Mock recommendation backend
 
-This lightweight Flask service powers the Azure RBAC Risk Advisor extension with AI-backed recommendations. A small PyTorch logistic-regression model scores each incoming Azure resource for excess-permission risk and combines the result with a remediation knowledge base for demo-friendly payloads inspired by Defender for Cloud.
+This lightweight Flask service powers the Microsoft Defender for Cloud RBAC Advisor extension with AI-backed recommendations. A small PyTorch logistic-regression model scores each incoming Azure resource for excess-permission risk and combines the result with a remediation knowledge base for demo-friendly payloads inspired by Defender for Cloud.
 
 ## Setup
 1. Create and activate a virtual environment (optional but recommended).
